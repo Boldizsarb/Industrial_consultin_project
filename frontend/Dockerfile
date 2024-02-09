@@ -16,6 +16,14 @@ COPY . .
 # Build the project using vue-cli-service
 RUN npm run build
 
-# Copy built assets from build stage to nginx server
-#COPY --from=build /app/dist /var/www/
+# Production stage
+FROM nginx:alpine
 
+# Copy built assets from build stage to nginx server
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx and keep it running in the foreground
+CMD ["nginx", "-g", "daemon off;"]

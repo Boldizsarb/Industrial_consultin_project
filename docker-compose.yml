@@ -35,7 +35,20 @@ services:
     ports:  
       - "8080:8080"
     depends_on:
+
       - flask
+
+    
+  nginx:
+    container_name: industrial-consulting-nginx
+    build: ./nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
+    depends_on:
+      - vuejs
 
 volumes: 
   data:
