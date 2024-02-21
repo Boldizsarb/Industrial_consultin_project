@@ -29,6 +29,7 @@
               <input
                 id="username"
                 name="username"
+                v-model="username"
                 type="text"
                 autocomplete="username"
                 required
@@ -41,6 +42,7 @@
               <input
                 id="password"
                 name="password"
+                v-model="password"
                 type="password"
                 autocomplete="current-password"
                 required
@@ -99,10 +101,8 @@ export default {
   name: "LoginPage",
   data() {
     return {
-      credentials: {
-        username: "",
-        password: "",
-      },
+      username: "",
+      password: "",
       isAnimated: false,
     };
   },
@@ -112,16 +112,25 @@ export default {
     }, 100); // Start the animation shortly after the component mounts
   },
   methods: {
-    async login() {
-      try {
-        //const response = await axios.post("/api/login", this.credentials);
-        // Save the token, usually in local storage, and redirect
-        //localStorage.setItem("user-token", response.data.token); // Token saved
-        this.$router.push({ name: "Dashboard" }); // Redirect to home
-      } catch (error) {
-        console.error("Login error:", error);
-        // Handle error, show message to the user
-      }
+    login() {
+      fetch("http://flask:5000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: this.username,
+          password: this.password,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+          this.$router.push("/dashboard");
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     },
   },
 };

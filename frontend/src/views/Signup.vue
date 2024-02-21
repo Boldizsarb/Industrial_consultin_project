@@ -21,19 +21,45 @@
             Create Account
           </h2>
         </div>
-        <form class="mt-8 space-y-6" @submit.prevent="login">
+        <form class="mt-8 space-y-6" @submit.prevent="signup">
           <input type="hidden" name="remember" value="true" />
           <div class="rounded-md shadow-sm -space-y-px">
             <div>
-              <label for="email-address" class="sr-only">Email address</label>
+              <label for="firstName" class="sr-only">First Name</label>
               <input
-                id="email-address"
-                name="email"
-                type="email"
-                autocomplete="email"
+                id="firstName"
+                name="firstName"
+                type="text"
+                v-model="firstName"
+                autocomplete="firstName"
                 required
                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                placeholder="First Name"
+              />
+              <label for="lastName" class="sr-only">Last Name</label>
+              <input
+                id="lastName"
+                name="lastName"
+                type="text"
+                v-model="lastName"
+                autocomplete="lastName"
+                required
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Last Name"
+              />
+            </div>
+            <div>
+              <label for="phoneNumber" class="sr-only"
+                >Telephone Number (Format: 04xx-xxx-xxxx)</label
+              >
+              <input
+                id="phoneNumber"
+                name="phoneNumber"
+                type="tel"
+                v-model="phoneNumber"
+                autocomplete="phoneNumber"
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Telephone  Number (Format: 04xx-xxx-xxxx)"
               />
             </div>
             <div>
@@ -42,10 +68,26 @@
                 id="password"
                 name="password"
                 type="password"
+                v-model="password"
                 autocomplete="current-password"
                 required
                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
+              />
+            </div>
+            <div>
+              <label for="confirmpassword" class="sr-only"
+                >Confirm Password</label
+              >
+              <input
+                id="confirmpassword"
+                name="confirmpassword"
+                type="password"
+                v-model="confirmPassword"
+                autocomplete="confirmpassword"
+                required
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Confirm Password"
               />
             </div>
           </div>
@@ -77,10 +119,11 @@ export default {
   name: "LoginPage",
   data() {
     return {
-      credentials: {
-        username: "",
-        password: "",
-      },
+      password: "",
+      confirmPassword: "",
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
       isAnimated: false,
     };
   },
@@ -90,16 +133,25 @@ export default {
     }, 100); // Start the animation shortly after the component mounts
   },
   methods: {
-    async login() {
-      try {
-        //const response = await axios.post("/api/login", this.credentials);
-        // Save the token, usually in local storage, and redirect
-        //localStorage.setItem("user-token", response.data.token); // Token saved
-        this.$router.push({ name: "Dashboard" }); // Redirect to home
-      } catch (error) {
-        console.error("Login error:", error);
-        // Handle error, show message to the user
-      }
+    signup() {
+      fetch("http://flask:5000/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: this.username,
+          password: this.password,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+          this.$router.push("/login");
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     },
   },
 };
