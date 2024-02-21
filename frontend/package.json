@@ -23,7 +23,7 @@
     "dotenv": "^16.4.1",
     "express": "^4.18.2",
     "@vue/cli-service": "^5.0.8",
-    "vue": "^2.6.14", 
+    "vue": "^3.2.13", 
     "vue-router": "^3.5.3"
   },
   "devDependencies": {
