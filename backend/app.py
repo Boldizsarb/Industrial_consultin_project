@@ -67,6 +67,7 @@ def get_users():
                         'last_name': row[2],
                         'email': row[3],
                         'number': row[4],
+                        'password': row[5],
                         'verified': row[8],
                         'created': row[9]
                     }
@@ -90,7 +91,7 @@ def get_tokens():
                         'id': row[0],
                         'user_id': row[1],
                         'token': row[2],
-                        'type': row[3],
+                        'expiration': row[3],
                         'created': row[4]
                     }
                     tokens.append(token)
