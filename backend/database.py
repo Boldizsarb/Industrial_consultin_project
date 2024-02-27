@@ -25,7 +25,7 @@ class DBPool:
             DBPool._instance = pool.ThreadedConnectionPool(minconn=1, maxconn=10,
                                                            user="postgres",
                                                            password="postgres",
-                                                           host="localhost",
+                                                           host="127.0.0.1",
                                                            port="5432",
                                                            database='industrial_consulting')
         return DBPool._instance
