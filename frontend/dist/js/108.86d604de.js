@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkindustrial_consulting_project"]=self["webpackChunkindustrial_consulting_project"]||[]).push([[108],{7108:function(e,n,t){t.r(n),t.d(n,{default:function(){return h}});var u=t(4108);const r=(0,u.QD)("h1",null,"Home Page",-1),i=(0,u.QD)("p",null,"Welcome to our website. This is the home page.",-1),o=[r,i];function c(e,n,t,r,i,c){return(0,u.Wz)(),(0,u.An)("div",null,o)}var l={name:"HomeView"},s=t(4100);const a=(0,s.c)(l,[["render",c]]);var h=a}}]);
+//# sourceMappingURL=108.86d604de.js.map

@@ -2,5 +2,7 @@ backend/__pycache__/
 
 backend/tests/__pycache__/
 
+frontend/node_modules/
+
 node_modules/
 #*#
