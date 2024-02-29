@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, make_response 
 import bcrypt
-from database import *
+from database import DBPool, logger
 from flask_cors import CORS
 from flask_mail import Mail
 import os 
@@ -36,9 +36,9 @@ configure_routes(app, mail)
 def get_message():
     return jsonify({'message': 'Hello, World!'})
 
-@app.route('/database', methods=['GET']) ## checking if database is connecting
+"""@app.route('/database', methods=['GET']) ## checking if database is connecting
 def get_database():
-    return test_db_connection()
+    return test_db_connection()"""
 
 
 @app.route('/email_sending', methods=['POST'])
@@ -48,8 +48,8 @@ def send_verification_email():
 
 # Calling the function of the create table to ensure that database is created on startup 
 with app.app_context():
-    create_table_user_if_not_exists()
-    create_table_password_reset_tokens_if_not_exists()
+    DBPool.create_table_user_if_not_exists()
+    DBPool.create_table_password_reset_tokens_if_not_exists()
 
 
 @app.route('/users', methods=['GET'])
