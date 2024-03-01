@@ -3,9 +3,7 @@ requests==2.25.1
 psycopg2-binary==2.8.6
 werkzeug == 2.0.1
 flask_cors == 3.0.10
-bcrypt == 2.0.0
+bcrypt == 4.1.2
 python-dotenv == 1.0.0
 flask_mail == 0.7.6
 PyJWT == 2.1.0
-
-

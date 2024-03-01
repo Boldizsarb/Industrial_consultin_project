@@ -375,6 +375,5 @@ def verify_password(email, password):
             stored_password = cur.fetchone()[0]
             print("the password hash from DB is", stored_password, file=sys.stderr) 
             # Ensure the stored password hash is encoded to bytes
-            stored_password_bytes = stored_password.encode('utf-8')
-            return stored_password_bytes
+            return stored_password.encode('utf-8') if isinstance(stored_password, str) else stored_password
 

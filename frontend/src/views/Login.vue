@@ -25,16 +25,16 @@
           <input type="hidden" name="remember" value="true" />
           <div class="rounded-md shadow-sm -space-y-px">
             <div>
-              <label for="username" class="sr-only">Username</label>
+              <label for="email" class="sr-only">email</label>
               <input
-                id="username"
-                name="username"
-                v-model="username"
+                id="email"
+                name="email"
+                v-model="email"
                 type="text"
-                autocomplete="username"
+                autocomplete="email"
                 required
                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Username"
+                placeholder="email"
               />
             </div>
             <div>
@@ -101,7 +101,7 @@ export default {
   name: "LoginPage",
   data() {
     return {
-      username: "",
+      email: "",
       password: "",
       isAnimated: false,
     };
@@ -113,13 +113,13 @@ export default {
   },
   methods: {
     login() {
-      fetch("http://flask:5000/login", {
+      fetch("http://localhost:5000//login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: this.username,
+          email: this.email,
           password: this.password,
         }),
       })
