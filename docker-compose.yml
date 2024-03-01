@@ -21,8 +21,13 @@ services:
       - "5000:5000"
     depends_on:
       - postgresql
-    network_mode: "host"
     environment:
+      - DB_HOST=postgresql
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=industrial_consulting 
+      - JWT_SECRET=your_strong_secret_here
       - FLASK_APP=app.py
       - FLASK_ENV=development
       - DATABASE_URL=postgresql://postgres:postgres@postgresql:5432/industrial_consulting
