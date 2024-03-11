@@ -1,1 +1,19 @@
-# Industrial_consulting_project
+# Data Mango Consulting Project
+
+
+## Running the project
+
+The project is intended to be run through Docker, and each section (front end, back end, and database) includes a Dockerfile responsible for building and deploying them as Docker images. To keep deployment simple, a docker-compose file is provided in the root directory. This file manages the Docker images and can be executed on system startup using the Systemd service file located in the 'server config' directory, it assumes the project will be at the location /home/user/Industrial_consulting_project/.
+
+```bash
+cd /home/user/
+git clone https://github.com/Boldizsarb/Industrial_consulting_project.git
+sudo cp '/home/user/Industrial_consulting_project/server config/run-project.service' /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable run-project.service
+sudo systemctl start run-project.service
+```
+
+An example production Nginx server configuration that can be adapted to serve the application with HTTPS has also been provided.
+
+
