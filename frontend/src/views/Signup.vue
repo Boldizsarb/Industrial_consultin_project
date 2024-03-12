@@ -152,7 +152,7 @@ export default {
         return;
       }
       console.log(process.env.VUE_APP_BACKEND_URL);
-      fetch(`http://localhost:5000/signup`, {
+      fetch(`${process.env.VUE_APP_BACKEND_URL}/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
