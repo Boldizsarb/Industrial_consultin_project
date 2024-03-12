@@ -38,18 +38,16 @@ def final_emition(reg,miles): ### this gives you the final g/km -> grams per kil
     gram_per_km = vehicle_enquiry(reg)
     kilometer = miles_to_kilometers(miles)
     total_emmission = gram_per_km * kilometer
-    return total_emmission
+    total_emmission_in_miles = gkm_to_gm(total_emmission)
+    return total_emmission_in_miles
 
 
 def gkm_to_gm(g_per_km): ## changing it to miles
     return g_per_km / 0.621371
 
 
-in_km = final_emition("GV08OWH",20) ## this would be the function call with 2 parameters, the reg and the miles
-in_miles = gkm_to_gm(in_km)
-print(f"The emmited Co2 is {in_km} g/km , or {in_miles} g/mile shame on you!")
+# in_km = final_emition("GV08OWH",20) ## this would be the function call with 2 parameters, the reg and the miles
+# in_miles = gkm_to_gm(in_km)
+# print(f"The emmited Co2 is {in_km} g/km , or {in_miles} g/mile shame on you!")
 
-
-
-
-
+print(final_emition("gv08owh",20))
