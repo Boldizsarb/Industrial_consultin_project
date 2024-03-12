@@ -14,9 +14,22 @@
         </button>
       </div>
 
-      <div>
+      <div class="text-white">
         <h1>Welcome user abcd</h1>
         <p>This is your carbon emission summary</p>
+        <select
+          v-model="chartType"
+          class="text-black bg-white border border-gray-300 p-2 rounded-md"
+        >
+          <option value="bar">Bar Chart</option>
+          <option value="doughnut">Doughnut Chart</option>
+        </select>
+        <div v-if="chartType === 'bar'" class="w-full">
+          <BarChart />
+        </div>
+        <div v-if="chartType === 'doughnut'" class="w-full">
+          <DoughnutChart />
+        </div>
       </div>
     </div>
   </div>
@@ -79,12 +92,20 @@
 </template>
 
 <script>
+import BarChart from "@/components/LineChart.vue";
+import DoughnutChart from "@/components/DoughnutChart.vue";
+
 export default {
   name: "DashBoard",
+  components: {
+    BarChart,
+    DoughnutChart,
+  },
   data() {
     return {
       isAnimated: false,
       showInput: false,
+      chartType: "bar",
       typeList: [
         { value: "car", name: "Car" },
         { value: "bus", name: "Bus" },

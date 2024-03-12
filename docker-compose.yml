@@ -33,7 +33,6 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgresql:5432/industrial_consulting
     volumes:
       - ./backend:/app
-
   
   vuejs:
     container_name: industrial-consulting-vuejs

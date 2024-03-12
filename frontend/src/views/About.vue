@@ -1,12 +1,16 @@
 <template>
   <div>
-    <h1>About Page</h1>
-    <p>conatct us</p>
+    <DoughnutChart />
   </div>
 </template>
 
 <script>
+import DoughnutChart from "@/components/DoughnutChart.vue";
+
 export default {
   name: "AboutView",
+  components: {
+    DoughnutChart,
+  },
 };
 </script>
