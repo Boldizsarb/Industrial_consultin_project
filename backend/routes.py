@@ -125,17 +125,33 @@ def configure_routes(app, mail):
     @app.route('/calculate_emission', methods=['POST'])
     def calculate_emission():
         data = request.json
-        reg = data.get('registration_number')
+        reg = data.get('reg')
         miles = data.get('miles', 0)  # Default to 0 if not provided
-        if not reg:
-            return jsonify({"error": "registration_number is required"}), 400
-        try:
-            miles = float(miles)
-        except ValueError:
-            return jsonify({"error": "miles must be a number"}), 400
+        vType = data.get('type')
+        if vType == 'car':
+            if not reg:
+                return jsonify({"error": "registration_number is required"}), 400
+            try:
+                miles = float(miles)
+            except ValueError:
+                return jsonify({"error": "miles must be a number"}), 400
 
-        total_emission_in_miles = carApi.final_emition(reg, miles)
-        if total_emission_in_miles == "":
-            return jsonify({"error": "Vehicle CO2 emission data not found"}), 404
+            total_emission_in_miles = carApi.final_emition(reg, miles)
+            if total_emission_in_miles == "":
+                return jsonify({"error": "Vehicle CO2 emission data not found"}), 404
 
-        return jsonify({"total_emission_g_mile": total_emission_in_miles})
+            return jsonify({"message": total_emission_in_miles}), 200
+        
+        elif vType == 'bus':
+            total_emission_in_miles = miles *   0.10215 * 1000
+            return jsonify({"message": total_emission_in_miles}), 200
+
+        elif vType == 'train':
+            total_emission_in_miles = miles *   0.028603 * 1000
+            return jsonify({"message": total_emission_in_miles}), 200
+
+        elif vType == 'plains':
+            total_emission_in_miles = miles * 0.32016 * 1000
+            return jsonify({"message": total_emission_in_miles}), 200
+        
+        
