@@ -16,7 +16,7 @@ JWT_SECRET = os.getenv('JWT_SECRET')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
-DB_PORT = os.getenv('DB_PORT')
+DB_PORT = 5432
 DB_NAME = os.getenv('DB_NAME')
 # DATABASE_URL = os.getenv("DATABASE_URL")
 
@@ -28,7 +28,7 @@ class DBPool:
             DBPool._instance = pool.ThreadedConnectionPool(minconn=1, maxconn=10,
                                                             user="postgres",
                                                             password="postgres",
-                                                            host="postgresql",
+                                                            host="127.0.0.1",
                                                             port="5432",
                                                             database='industrial_consulting')
         return DBPool._instance

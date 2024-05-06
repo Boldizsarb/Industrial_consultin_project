@@ -32,7 +32,8 @@ app.config['JWT_SECRET'] = os.environ.get('JWT_SECRET')
 CORS(app)
 
 configure_routes(app, mail)
-@app.route('/message', methods=['GET'])
+
+@app.route('/api/message', methods=['GET'])
 def get_message():
     return jsonify({'message': 'Hello, World!'})
 
@@ -41,7 +42,7 @@ def get_database():
     return test_db_connection()"""
 
 
-@app.route('/email_sending', methods=['POST'])
+@app.route('/api/email_sending', methods=['POST'])
 def send_verification_email():
     return jsonify({'message': 'Verification email sent successfully'}), 200
 
@@ -52,7 +53,7 @@ with app.app_context():
     DBPool.create_table_password_reset_tokens_if_not_exists()
 
 
-@app.route('/users', methods=['GET'])
+@app.route('/api/users', methods=['GET'])
 def get_users():
     try:
         with DBPool.get_instance().getconn() as conn:
@@ -78,7 +79,7 @@ def get_users():
         return jsonify({'error': 'Internal Server Error'}), 500
     
 
-@app.route('/tokens', methods=['GET'])
+@app.route('/api/tokens', methods=['GET'])
 def get_tokens():
     try:
         with DBPool.get_instance().getconn() as conn:
