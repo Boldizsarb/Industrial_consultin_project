@@ -65,12 +65,12 @@
               </label>
             </div>
             <div class="text-sm">
-              <a
-                href="#"
+              <router-link
+                to="/confirmEmail"
                 class="font-medium text-slate-700 hover:text-green-700"
               >
                 Forgot your password?
-              </a>
+              </router-link>
             </div>
           </div>
 
@@ -113,7 +113,7 @@ export default {
   },
   methods: {
     login() {
-      fetch(`${process.env.VUE_APP_BACKEND_URL}/login`, {
+      fetch("http://localhost:5000//login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
