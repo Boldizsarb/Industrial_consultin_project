@@ -33,12 +33,12 @@ def miles_to_kilometers(miles):
 
 
 
-def final_emition(reg,miles): ### this gives you the final g/km -> grams per kilometer
+def final_emition(reg,miles, people =1): ### this gives you the final g/km -> grams per kilometer ## by default the number of people is 1
 
     gram_per_km = vehicle_enquiry(reg)
     kilometer = miles_to_kilometers(miles)
     total_emmission = gram_per_km * kilometer
-    total_emmission_in_miles = gkm_to_gm(total_emmission)
+    total_emmission_in_miles = gkm_to_gm(total_emmission) / people
     return total_emmission_in_miles
 
 
@@ -50,4 +50,4 @@ def gkm_to_gm(g_per_km): ## changing it to miles
 # in_miles = gkm_to_gm(in_km)
 # print(f"The emmited Co2 is {in_km} g/km , or {in_miles} g/mile shame on you!")
 
-print(final_emition("gv08owh",20))
+print(final_emition("gv08owh",20,1))
