@@ -7,6 +7,7 @@ import traceback
 import sys
 import carApi
 import bus_api
+import train_api
 
 def configure_routes(app, mail):
 
@@ -151,39 +152,27 @@ def configure_routes(app, mail):
         data = request.json
         reg = data.get('reg')
         miles = data.get('miles', 0)  # Default to 0 if not provided
-        pesssangers = data.get('num_pessangers',1)  ## RENATO THIS WILL NEED TO BE LINKED WITH FRONT END, remember a car can only take 7 paople by law
-        vType = data.get('type')
-        if vType == 'car':
-            if not reg:
-                return jsonify({"error": "registration_number is required"}), 400
-            try:
-                miles = float(miles)
-            except ValueError:
-                return jsonify({"error": "miles must be a number"}), 400
+        pesssangers = data.get('num_pessangers',1) ## need to take the value, input needed in the front end
 
-            total_emission_in_miles = carApi.final_emition(reg, miles)
-            if total_emission_in_miles == "":
-                return jsonify({"error": "Vehicle CO2 emission data not found"}), 404
+        total_emmission_in_miles, total_emission = carApi.final_emition(reg, miles, pesssangers)
+        return jsonify({ ### both the mile and the km is going up
+            "total_emmission_in_miles": total_emmission_in_miles,
+            "total_emission": total_emission
+        }), 200
 
-            return jsonify({"message": total_emission_in_miles}), 200
-
-        elif vType == 'bus':
-            total_emission_in_miles = miles * 0.10215 * 1000
-            return jsonify({"message": total_emission_in_miles}), 200
-
-        elif vType == 'train':
-            total_emission_in_miles = miles * 0.028603 * 1000
-            return jsonify({"message": total_emission_in_miles}), 200
-
-        elif vType == 'plains':
-            total_emission_in_miles = miles * 0.32016 * 1000
-            return jsonify({"message": total_emission_in_miles}), 200
 
     @app.route('/calculate_bus_emission', methods=['POST'])
     def calculate_bus_emission():
-        print()  ### bus logic comes here! the only attribute needs to be retrieved from user is the milage thats all
-        ## plus an idea, when the car api is called, the bus api could be called too, for comparison
+        data = request.json
+        miles = data.get('miles', 0)
+        total_number_emition = bus_api.calculate_bus_emissions_standardized(miles,100) ## the 2nd parameter is the avarage! no need to touch
+        return jsonify({'message': total_number_emition}), 200
+
 
     @app.route('/calculate_train_emission', methods=['POST'])
     def calculate_train_emission():
-        print()## train logic
+        data = request.json
+        miles = data.get('miles', 0)
+        total_number_emition = train_api.calculate_train_emissions_standardized(miles,35) ## same, 2nd parameter is an avarage
+        return jsonify({'message': total_number_emition}), 200
+

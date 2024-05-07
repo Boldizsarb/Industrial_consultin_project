@@ -39,7 +39,7 @@ def final_emition(reg,miles, people =1): ### this gives you the final g/km -> gr
     kilometer = miles_to_kilometers(miles)
     total_emmission = gram_per_km * kilometer
     total_emmission_in_miles = gkm_to_gm(total_emmission) / people
-    return total_emmission_in_miles
+    return total_emmission_in_miles,total_emmission
 
 
 def gkm_to_gm(g_per_km): ## changing it to miles
