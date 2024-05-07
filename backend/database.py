@@ -176,7 +176,7 @@ class DBPool:
             return f"Unable to create table 'public_transport': {e}"
 
 
-                
+# Generating JWT token              
 def generate_jwt_token(email):
     try:
         expiration_time = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
@@ -190,6 +190,22 @@ def generate_jwt_token(email):
         return None
 
 
+# Decoding JWT Token
+def decode_jwt_token(token):
+    try:
+        print("Token to decode:", token)  # Debug statement
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        print("Decoded payload:", payload)  # Debug statement
+        return payload, None
+    except jwt.ExpiredSignatureError:
+        print("Token has expired")  # Debug statement
+        return None, "Token has expired"
+    except jwt.InvalidTokenError:
+        print("Invalid token received:", token)  # Debug statement
+        return None, "Invalid token"
+    except Exception as e:
+        print("Error in decoding token:", str(e))  # Debug statement
+        return None, "Error processing your request"
 
 
 #Insert queries
@@ -231,6 +247,8 @@ def test_db_connection():
     except psycopg2.Error as e:
         return f"Unable to connect to the database: {e}"
 
+
+
 def store_user_in_database(first_name, last_name, email, phone_number, hashed_password, verification_token):
     token_expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
     with DBPool.get_instance().getconn() as conn:
@@ -271,6 +289,7 @@ def check_user_email(email):
             return user_exists
 
 
+
 def verify_reset_token(email, token):
     try:
         decoded_token = jwt.decode(token, JWT_SECRET, algorithms='HS256')
@@ -280,65 +299,95 @@ def verify_reset_token(email, token):
     except jwt.InvalidTokenError:
         return False
     
+
    
-def update_user_password(email, new_password):
-    print(f"Updating password for email: {email}, new password: {new_password}")
-    with DBPool.get_instance().getconn() as conn:
-        with conn.cursor() as cur:
-            try:
-                hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
-                cur.execute('UPDATE "user" SET password = %s WHERE email = %s', (hashed_password, email))
+def update_user_password(user_id, new_password):
+    hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    try:
+        with DBPool.get_instance().getconn() as conn:
+            with conn.cursor() as cur:
+                # Ensure the table name is correctly specified here as "user"
+                cur.execute("UPDATE \"user\" SET password = %s WHERE id = %s", (hashed_password, user_id))
                 conn.commit()
-                return "Password updated successfully."
-            except psycopg2.Error as e:
-                logger.error(f"Failed to update password: {e}", exc_info=True)
-                conn.rollback()
-                return "Failed to update password.", 500
-            except Exception as e:
-                logger.exception(f"Unexpected error: {e}")
-                conn.rollback()
-                return "Unexpected error.", 500
-            
+                return True
+    except Exception as e:
+        print(f"Error updating password: {e}")
+        return False
 
 
 
 
-def generate_password_reset_token(user_id):
-    # Generate a unique token
-    token = generate_jwt_token()
-    # Calculate token expiration (e.g., 1 hour from now)
-    expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=3)
-    # Store the token in the database
+def generate_password_reset_token(email):
+    # Check if the user ID exists based on email 
     with DBPool.get_instance().getconn() as conn:
         with conn.cursor() as cur:
-            cur.execute("""
-                INSERT INTO password_reset_tokens (user_id, token, expiration)
-                VALUES (%s, %s, %s)
-            """, (user_id, token, expiration))
-            conn.commit()
-    return token
+            cur.execute('SELECT id FROM "user" WHERE email = %s', (email,))
+            users_id = cur.fetchone()
+            logger.info("User ID result:", users_id)
+            if users_id:
+                # Correctly retrieve user_id
+                user_id = users_id[0]
+                logger.info("User ID:", user_id)
 
+                # Delete any existing tokens for the user
+                cur.execute('DELETE FROM password_reset_tokens WHERE user_id = %s', (user_id,))
 
-def check_password_reset_token(email, token):
-    print(f"Checking password reset token for email: {email}, token: {token}")
-    with DBPool.get_instance().getconn() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT id, expiration FROM "password_reset_tokens" 
-                WHERE user_id = (SELECT id FROM "user" WHERE email = %s) 
-                AND token = %s
-            """, (email, token))
-            result = cur.fetchone()
-
-            if result:
-                logger.info(f"Password reset token found: {result}")
-                user_id, expiration = result
-                if datetime.datetime.utcnow() < expiration:
-                    return user_id  # Token valid and not expired
-                else:
-                    return False  # Token expired 
+                # Generate a unique token
+                token = generate_jwt_token(email)
+                logger.info("Generated token:", token)
+                # Calculate token expiration (e.g., 1 hour from now)
+                expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=3)
+                # Store the token in the database
+                cur.execute("""
+                    INSERT INTO password_reset_tokens (user_id, token, expiration)
+                    VALUES (%s, %s, %s)
+                """, (user_id, token, expiration))
+                conn.commit()
+                logger.info("Token inserted into database.")
+                return token
             else:
-                return False  # Token not found
+                return None
+
+
+def check_password_reset_token(token):
+    print(f"Received token for validation: {token}")
+    # Ensure token is clean and without the '$' prefix
+    clean_token = token.strip('$')
+    print(f"Cleaned token: {clean_token}")
+
+    try:
+        payload = jwt.decode(clean_token, JWT_SECRET, algorithms=["HS256"])
+        print("Decoded payload:", payload)
+        email = payload['email']
+        return check_token_in_database(email, clean_token)
+    except jwt.ExpiredSignatureError:
+        return None, "Token has expired"
+    except jwt.InvalidTokenError:
+        return None, "Invalid token"
+    except Exception as e:
+        return None, f"Error processing your request: {str(e)}"
+
+
+def check_token_in_database(email, token):
+    try:
+        print("Checking token in database for email:", email)  # Debug statement
+        with DBPool.get_instance().getconn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT user_id FROM password_reset_tokens 
+                    WHERE token = %s AND expiration > NOW()
+                """, (token,))
+                result = cur.fetchone()
+                if result:
+                    print("Token is valid and not expired, user_id:", result[0])  # Debug statement
+                    return result[0], None
+                else:
+                    print("No matching token found or token has expired")  # Debug statement
+                    return None, "No token found or token does not match"
+    except Exception as e:
+        print(f"Error checking token in database: {e}")  # Debug statement
+        return None, "Error processing your request"
+
 
 
 def verify_user_account(email, verification_token):
@@ -363,6 +412,7 @@ def verify_user_account(email, verification_token):
             else:
                 return "User not found."
             
+
 def verify_password(email, password):
     if not email or not password:
         return False
