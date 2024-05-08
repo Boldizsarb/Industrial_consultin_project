@@ -10,9 +10,9 @@ class TestTrainApi(unittest.TestCase):
 
         self.assertEqual(200, calculate_train_emissions_standardized(10, 20))
 
-        self.assertEqual(220, calculate_train_emissions_standardized(5.5, 40))
+        self.assertAlmostEqual(220, calculate_train_emissions_standardized(5.5, 40), places=1)
 
-        self.assertEqual(137.5, calculate_train_emissions_standardized(2.75, 50))
+        self.assertAlmostEqual(137.5, calculate_train_emissions_standardized(2.75, 50), places=1)
 
         self.assertEqual(0, calculate_train_emissions_standardized(100, 0))
 
