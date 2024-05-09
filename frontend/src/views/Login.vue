@@ -126,17 +126,14 @@ export default {
         .then((response) => response.json())
         .then((data) => {
           console.log("Success:", data);
-          
           // Store the response data in a cookie
           this.setCookie("token", data.token, 1); // Assuming the token is stored in data.token
-          
           this.$router.push("/dashboard");
         })
         .catch((error) => {
           console.error("Error:", error);
         });
     },
-    
     setCookie(name, value, days) {
       let expires = "";
       if (days) {

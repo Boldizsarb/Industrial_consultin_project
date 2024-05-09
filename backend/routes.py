@@ -126,6 +126,22 @@ def configure_routes(app, mail):
         else:
             return jsonify({'status': 'missing'})
 
+    @app.route('/logout', methods=['POST'])
+    def logout():
+        # Get the token from the request headers
+        token = request.headers.get('Authorization')
+        if token:
+            # Decode the token
+            decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            # Remove the token from the database or storage
+            if remove_stored_token(token):
+                dellete_token(decoded_token['email'])
+                return jsonify({'status': 'success'})
+            else:
+                return jsonify({'status': 'failed'})
+        else:
+            return jsonify({'status': 'missing'})
+
     # This endpoint confirms the password reset using the token and updates the password
     @app.route('/confirm_password_reset', methods=['POST'])
     def confirm_password_reset():
@@ -166,10 +182,6 @@ def configure_routes(app, mail):
             return jsonify({'error': 'Failed to generate password reset token'}), 500
         return jsonify({'error': 'User not found'}), 404
     
-
-    
-
-
     @app.route('/calculate_emission', methods=['POST'])
     def calculate_emission():
         data = request.json
