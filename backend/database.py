@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from flask import jsonify
 import sys
 import bcrypt
+import hashlib
 
 
 logger = logging.getLogger(__name__) 
@@ -48,7 +49,7 @@ class DBPool:
                             email VARCHAR(255) NOT NULL UNIQUE,
                             number VARCHAR(20),
                             password VARCHAR(255) NOT NULL,
-                            token VARCHAR(255),
+                            token VARCHAR(255) DEFAULT NULL,
                             verification_token VARCHAR(255),
                             token_expiration TIMESTAMP,
                             verified BOOLEAN NOT NULL DEFAULT FALSE,
@@ -283,7 +284,6 @@ def store_user_in_database(first_name, last_name, email, phone_number, hashed_pa
         
 
         
-
 def check_user_email(email):
     with DBPool.get_instance().getconn() as conn:
         with conn.cursor() as cur:
@@ -305,7 +305,7 @@ def verify_reset_token(email, token):
 
    
 def update_user_password(user_id, new_password):
-    hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    hashed_password = hashlib.sha256(new_password.encode()).hexdigest()
     try:
         with DBPool.get_instance().getconn() as conn:
             with conn.cursor() as cur:
@@ -416,36 +416,48 @@ def verify_user_account(email, verification_token):
                 return "User not found."
             
 
-def verify_password(email, password):
-    if not email or not password:
-        return False
+def verify_password(email):
+    if not email:
+        return None
     if not check_user_email(email):
-        return False
+        return None
     with DBPool.get_instance().getconn() as conn:
         with conn.cursor() as cur:
             cur.execute('SELECT password FROM "user" WHERE email = %s', (email,))
             print("Password verified", file=sys.stderr)
-            stored_password = cur.fetchone()[0]
-            print("the password hash from DB is", stored_password, file=sys.stderr) 
-            # Ensure the stored password hash is encoded to bytes
-            return stored_password.encode('utf-8') if isinstance(stored_password, str) else stored_password
+            stored_password = cur.fetchone()
+        if stored_password:
+            stored_password_hash = stored_password[0]
+            print("the password hash from DB is", stored_password_hash, file=sys.stderr)
+            return stored_password_hash
+        else:
+            return None
 
-
-def store_sesssion_token(email, token):
+def store_sesssion_token(token, email):
     with DBPool.get_instance().getconn() as conn:
         with conn.cursor() as cur:
+            print("Original Token:", token)  # Print the original token value
+
             cur.execute("""
                 UPDATE "user" SET token = %s WHERE email = %s
             """, (token, email))
             conn.commit()
-            return "Token stored successfully."
+
+            cur.execute("""
+                SELECT token FROM "user" WHERE email = %s
+            """, (email,))
+            stored_token = cur.fetchone()
+            print("Stored Token:", stored_token, file=sys.stderr)  # Print the stored token value
+            return stored_token[0] if stored_token   else None
 
 
 def get_stored_token(token):
     with DBPool.get_instance().getconn() as conn:
+        print("Token to retrieve:", token, file=sys.stderr)
         with conn.cursor() as cur:
             cur.execute('SELECT token FROM "user" WHERE token = %s', (token,))
-            stored_token = cur.fetchone()
+            stored_token = cur.fetchone()   
+            print("Token retrieved ", stored_token, file=sys.stderr)
             return stored_token[0] if stored_token else None
 
 def dellete_token(email):

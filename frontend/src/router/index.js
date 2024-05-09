@@ -48,6 +48,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const token = getCookie("token");
+  console.log("Token:", token);
 
   if (requiresAuth) {
     // Send a request to the backend to verify the token
@@ -56,9 +57,11 @@ router.beforeEach((to, from, next) => {
       headers: {
         Authorization: token,
       },
+      body: JSON.stringify({ token }),
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log("Data:", data);
         if (data.status === "valid") {
           // Token is valid, allow access to the route
           next();

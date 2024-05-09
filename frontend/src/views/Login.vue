@@ -142,7 +142,7 @@ export default {
         expires = "; expires=" + date.toUTCString();
       }
       document.cookie = name + "=" + (value || "") + expires + "; path=/";
-    }
-  }
-}
+    },
+  },
+};
 </script>

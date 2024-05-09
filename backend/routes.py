@@ -15,7 +15,7 @@ def configure_routes(app, mail):
     def signup():
         if request.method == 'OPTIONS':
             response = make_response(jsonify({'status': 'OK'}), 200)
-            response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080'
+            response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8081'
             response.headers['Access-Control-Allow-Methods'] = 'POST'
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
             return _build_cors_preflight_response()
@@ -31,8 +31,7 @@ def configure_routes(app, mail):
             if not all([first_name, last_name, email, phone_number, password]):
                 return jsonify({'error': 'All fields must be filled'}), 400
 
-            hashed_password = bcrypt.hashpw(password.encode('SHA-256'), bcrypt.gensalt())
-            hashed_password = hashed_password.decode('SHA-256')
+            hashed_password = hashlib.sha256(password.encode()).hexdigest()
             verification_token = generate_jwt_token(email)
              
             print("Verification token generated:", verification_token)
@@ -65,7 +64,7 @@ def configure_routes(app, mail):
         print("Received login request", file=sys.stderr)
         if request.method == 'OPTIONS':
             response = make_response(jsonify({'status': 'OK'}), 200)
-            response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080'
+            response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8081'
             response.headers['Access-Control-Allow-Methods'] = 'POST'
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
             return _build_cors_preflight_response()
@@ -83,22 +82,23 @@ def configure_routes(app, mail):
             if not all([email, password]):
                 return jsonify({'error': 'All fields must be filled'}), 400
 
-            password_hash = verify_password(email, password)
-            password = password.encode('utf-8')
-            print(f"Received login request for user: {password}", file=sys.stderr)
+            stored_password_hash = verify_password(email)
+            token = hashlib.sha256(email.encode()).hexdigest()
+            print(f"Received login request for user: {token}", file=sys.stderr)
+            store_sesssion_token(token,email)
+            if stored_password_hash:
+                password_hash = hashlib.sha256(password.encode()).hexdigest()
+                print(f"Received login request for user: {password_hash}", file=sys.stderr)
 
-            if password_hash and bcrypt.checkpw(password, password_hash):
-                token = generate_jwt_token(email)
-                if token is None:
-                    return jsonify({'error': 'Failed to generate token'}), 500
-                store_sesssion_token(email, token)
-                return jsonify({'success': 'Logged in', 'token': token}), 200
-            else:
-                return jsonify({'error': 'Invalid email or password'}), 401
+                if password_hash == stored_password_hash:
+                    return jsonify({'Success': 'Logged in', 'token' : token }), 200
+                else:
+                    return jsonify({'error': 'Invalid email or password'}), 401
 
         except Exception as e:
             logger.exception(f"Exception in login: {e}")
             return jsonify({'error': 'Failed to login'}), 500
+        
     @app.route('/verify-token', methods=['POST'])
     def verify_token():
         # Get the token from the request headers
@@ -106,16 +106,13 @@ def configure_routes(app, mail):
 
         if token:
             try:
-                # Verify and decode the JWT token
-                decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-                email = decoded_token['email']
-                
                 # Retrieve the stored token for the user from the database or storage
                 stored_token = get_stored_token(token)
-                
+                print(f"my stored_tcoken {stored_token}",file=sys.stderr)
+                print(f"my tcoken{token}", file=sys.stderr)
                 if token == stored_token:
                     # Token is valid
-                    return jsonify({'status': 'valid', 'email': email})
+                    return jsonify({'status': 'valid'})
                 else:
                     # Token is invalid
                     return jsonify({'status': 'invalid'})
