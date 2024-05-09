@@ -447,3 +447,12 @@ def get_stored_token(token):
             cur.execute('SELECT token FROM "user" WHERE token = %s', (token,))
             stored_token = cur.fetchone()
             return stored_token[0] if stored_token else None
+
+def dellete_token(email):
+    with DBPool.get_instance().getconn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE "user" SET token = %s WHERE email = %s
+            """, (None, email))
+            conn.commit()
+            return "Token deleted successfully."

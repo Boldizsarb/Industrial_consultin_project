@@ -1,4 +1,3 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
@@ -50,9 +49,31 @@ router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const token = getCookie("token");
 
-  if (requiresAuth && !token) {
-    next("/login");
+  if (requiresAuth) {
+    // Send a request to the backend to verify the token
+    fetch("http://localhost:5000/verify-token", {
+      method: "POST",
+      headers: {
+        Authorization: token,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "valid") {
+          // Token is valid, allow access to the route
+          next();
+        } else {
+          // Token is invalid or expired, redirect to the login page
+          next("/login");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        // Handle any errors that occurred during the token verification
+        next("/login");
+      });
   } else {
+    // Route doesn't require authentication, allow access
     next();
   }
 });

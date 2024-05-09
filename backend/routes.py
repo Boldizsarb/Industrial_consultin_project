@@ -165,6 +165,9 @@ def configure_routes(app, mail):
                 return jsonify({'message': 'Password reset email sent'}), 200
             return jsonify({'error': 'Failed to generate password reset token'}), 500
         return jsonify({'error': 'User not found'}), 404
+    
+
+    
 
 
     @app.route('/calculate_emission', methods=['POST'])
