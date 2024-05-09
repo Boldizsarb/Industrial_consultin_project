@@ -5,19 +5,19 @@ const routes = [
     path: "/",
     name: "Main",
     component: () => import("../views/MainPage.vue"),
-    meta: { hideMenu: true, requiresAuth: false },
+    meta: { hideMenu: true, requiresAuth: false, guestOnly: true },
   },
   {
     path: "/login",
     name: "Login",
     component: () => import("../views/Login.vue"),
-    meta: { hideMenu: true, requiresAuth: false },
+    meta: { hideMenu: true, requiresAuth: false, guestOnly: true },
   },
   {
     path: "/signup",
     name: "SignUp",
     component: () => import("../views/Signup.vue"),
-    meta: { hideMenu: true, requiresAuth: false },
+    meta: { hideMenu: true, requiresAuth: false, guestOnly: true },
   },
   {
     path: "/dashboard",
@@ -47,6 +47,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const guestOnly = to.matched.some((record) => record.meta.guestOnly);
   const token = getCookie("token");
   console.log("Token:", token);
 
@@ -75,8 +76,11 @@ router.beforeEach((to, from, next) => {
         // Handle any errors that occurred during the token verification
         next("/login");
       });
+  } else if (guestOnly && token) {
+    // User is authenticated and trying to access a guest-only route, redirect to the dashboard
+    next("/dashboard");
   } else {
-    // Route doesn't require authentication, allow access
+    // Route doesn't require authentication or is a guest-only route, allow access
     next();
   }
 });
