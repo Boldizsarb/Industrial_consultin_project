@@ -5,6 +5,7 @@ import datetime
 import logging
 import os
 from dotenv import load_dotenv
+import hashlib
 from flask import jsonify
 import sys
 import bcrypt
@@ -304,7 +305,7 @@ def verify_reset_token(email, token):
 
    
 def update_user_password(user_id, new_password):
-    hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    hashed_password = hashlib.sha256(new_password.encode()).hexdigest()
     try:
         with DBPool.get_instance().getconn() as conn:
             with conn.cursor() as cur:
@@ -415,17 +416,20 @@ def verify_user_account(email, verification_token):
                 return "User not found."
             
 
-def verify_password(email, password):
-    if not email or not password:
-        return False
+def verify_password(email):
+    if not email:
+        return None
     if not check_user_email(email):
-        return False
+        return None
     with DBPool.get_instance().getconn() as conn:
         with conn.cursor() as cur:
             cur.execute('SELECT password FROM "user" WHERE email = %s', (email,))
             print("Password verified", file=sys.stderr)
-            stored_password = cur.fetchone()[0]
-            print("the password hash from DB is", stored_password, file=sys.stderr) 
-            # Ensure the stored password hash is encoded to bytes
-            return stored_password.encode('utf-8') if isinstance(stored_password, str) else stored_password
+            stored_password = cur.fetchone()
 
+            if stored_password:
+                stored_password_hash = stored_password[0]
+                print("the password hash from DB is", stored_password_hash, file=sys.stderr)
+                return stored_password_hash
+            else:
+                return None
