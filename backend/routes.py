@@ -5,6 +5,7 @@ import jwt
 from email_sending import send_verification_email, send_password_reset_email
 import traceback
 import sys
+import hashlib
 import carApi
 import bus_api
 import train_api
@@ -15,7 +16,7 @@ def configure_routes(app, mail):
     def signup():
         if request.method == 'OPTIONS':
             response = make_response(jsonify({'status': 'OK'}), 200)
-            response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080'
+            response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8081'
             response.headers['Access-Control-Allow-Methods'] = 'POST'
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
             return _build_cors_preflight_response()
@@ -31,8 +32,8 @@ def configure_routes(app, mail):
             if not all([first_name, last_name, email, phone_number, password]):
                 return jsonify({'error': 'All fields must be filled'}), 400
 
-            hashed_password = bcrypt.hashpw(password.encode('SHA-256'), bcrypt.gensalt())
-            hashed_password = hashed_password.decode('SHA-256')
+            
+            hashed_password = hashlib.sha256(password.encode()).hexdigest()
             verification_token = generate_jwt_token(email)
              
             print("Verification token generated:", verification_token)
@@ -66,7 +67,7 @@ def configure_routes(app, mail):
         print("Received login request", file=sys.stderr)
         if request.method == 'OPTIONS':
             response = make_response(jsonify({'status': 'OK'}), 200)
-            response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080'
+            response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8081'
             response.headers['Access-Control-Allow-Methods'] = 'POST'
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
             return _build_cors_preflight_response()
@@ -84,17 +85,17 @@ def configure_routes(app, mail):
             if not all([email, password]):
                 return jsonify({'error': 'All fields must be filled'}), 400
             
-            password_hash = verify_password(email, password)
+            stored_password_hash = verify_password(email)
 
-            password = password.encode('SHA-256')
-            print(f"Received login request for user: {password}", file=sys.stderr)
+            if stored_password_hash:
+                password_hash = hashlib.sha256(password.encode()).hexdigest()
+                print(f"Received login request for user: {password_hash}", file=sys.stderr)
 
-            if password_hash and bcrypt.checkpw(password, password_hash):
-                #token = generate_jwt_token(email)
-                return jsonify({'Sucess':'Logged in '}), 200
-            else:
-                return jsonify({'error': 'Invalid email or password'}), 401
-
+                if password_hash == stored_password_hash:
+                    return jsonify({'Success': 'Logged in'}), 200
+                else:
+                    return jsonify({'error': 'Invalid email or password'}), 401
+            
         except Exception as e:
             logger.exception(f"Exception in login: {e}") 
         
@@ -120,6 +121,7 @@ def configure_routes(app, mail):
                 return jsonify({'error': 'Failed to update password'}), 500
         else:
             return jsonify({'error': error}), 400
+
 
 
     def _build_cors_preflight_response():
