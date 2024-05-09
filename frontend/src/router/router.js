@@ -1,51 +1,66 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import HelloWorld from '../index.vue';
-import Login from '../Login.vue';
-import Signup from '../Signup.vue';
-import ConfirmEmail from '../confirmEmail.vue';
-import ConfirmPassword from '../confirmPassword.vue';
-import Redirect from '../redirect.vue';
-
-
-Vue.use(VueRouter);
+// src/router/index.js
+import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
-    {
-        path: '/',
-        name: 'HelloWorld',
-        component: HelloWorld
-    },
-    {
-        path: '/login',
-        name: 'Login',
-        component: Login
-    },
-    {
-        path: '/signup',
-        name: 'Signup',
-        component: Signup
-    },
-    {
-        path: '/confirmEmail',
-        name: 'confirmEmail',
-        component: ConfirmEmail
-    },
-    {
-        path: '/redirect', 
-        name: 'redirect',
-        component: Redirect
-    },
-    {
-        path: '/confirmPassword/:token',
-        name: 'confirmPassword',
-        component: ConfirmPassword
-    }
+  {
+    path: "/",
+    name: "Main",
+    component: () => import("../views/MainPage.vue"),
+    meta: { hideMenu: true, requiresAuth: false },
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("../views/Login.vue"),
+    meta: { hideMenu: true, requiresAuth: false },
+  },
+  {
+    path: "/signup",
+    name: "SignUp",
+    component: () => import("../views/Signup.vue"),
+    meta: { hideMenu: true, requiresAuth: false },
+  },
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    component: () => import("../views/Dashboard.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/about",
+    name: "About",
+    component: () => import("../views/About.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/contact",
+    name: "Contact",
+    component: () => import("../views/Contact.vue"),
+    meta: { requiresAuth: true },
+  },
+  // Add more routes as needed
 ];
-const router = new VueRouter({
-    mode: 'history',
-    base: process.env.BASE_URL,
-    routes
+
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
+  routes,
 });
+
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const token = getCookie("token");
+
+  if (requiresAuth && !token) {
+    next("/login");
+  } else {
+    next();
+  }
+});
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+}
 
 export default router;

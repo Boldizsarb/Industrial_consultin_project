@@ -60,7 +60,6 @@ def configure_routes(app, mail):
                 'traceback': error_traceback
             }), 500
     
-
     @app.route('/login', methods=['POST', 'OPTIONS'])
     def login():
         print("Received login request", file=sys.stderr)
@@ -70,6 +69,7 @@ def configure_routes(app, mail):
             response.headers['Access-Control-Allow-Methods'] = 'POST'
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
             return _build_cors_preflight_response()
+
         try:
             data = request.get_json()
             email = data.get('email')
@@ -80,38 +80,60 @@ def configure_routes(app, mail):
             print(f"Received login request for user: {password}", file=sys.stderr)
             print(f"Received login request for user: {data}", file=sys.stderr)
 
-
             if not all([email, password]):
                 return jsonify({'error': 'All fields must be filled'}), 400
-            
-            password_hash = verify_password(email, password)
 
-            password = password.encode('SHA-256')
+            password_hash = verify_password(email, password)
+            password = password.encode('utf-8')
             print(f"Received login request for user: {password}", file=sys.stderr)
 
             if password_hash and bcrypt.checkpw(password, password_hash):
-                #token = generate_jwt_token(email)
-                return jsonify({'Sucess':'Logged in '}), 200
+                token = generate_jwt_token(email)
+                if token is None:
+                    return jsonify({'error': 'Failed to generate token'}), 500
+                store_sesssion_token(email, token)
+                return jsonify({'success': 'Logged in', 'token': token}), 200
             else:
                 return jsonify({'error': 'Invalid email or password'}), 401
 
         except Exception as e:
-            logger.exception(f"Exception in login: {e}") 
-        
+            logger.exception(f"Exception in login: {e}")
             return jsonify({'error': 'Failed to login'}), 500
-        
-        
-    
+    @app.route('/verify-token', methods=['POST'])
+    def verify_token():
+        # Get the token from the request headers
+        token = request.headers.get('Authorization')
+
+        if token:
+            try:
+                # Verify and decode the JWT token
+                decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+                email = decoded_token['email']
+                
+                # Retrieve the stored token for the user from the database or storage
+                stored_token = get_stored_token(token)
+                
+                if token == stored_token:
+                    # Token is valid
+                    return jsonify({'status': 'valid', 'email': email})
+                else:
+                    # Token is invalid
+                    return jsonify({'status': 'invalid'})
+            except jwt.ExpiredSignatureError:
+                return jsonify({'status': 'expired'})
+            except jwt.InvalidTokenError:
+                return jsonify({'status': 'invalid'})
+        else:
+            return jsonify({'status': 'missing'})
+
     # This endpoint confirms the password reset using the token and updates the password
     @app.route('/confirm_password_reset', methods=['POST'])
     def confirm_password_reset():
         data = request.get_json()
         token = data.get('resetToken')
         new_password = data.get('password')
-
         if not token or not new_password:
             return jsonify({'error': 'Token and new password are required'}), 400
-
         user_id, error = check_password_reset_token(token)
         if user_id:
             if update_user_password(user_id, new_password):
@@ -120,15 +142,13 @@ def configure_routes(app, mail):
                 return jsonify({'error': 'Failed to update password'}), 500
         else:
             return jsonify({'error': error}), 400
-
-
     def _build_cors_preflight_response():
-        response = make_response()
-        response.headers['Access-Control-Allow-Origin'] = '*'
-        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-        return response
-    
+            response = make_response()
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            return response
+        
 
 
     @app.route('/request_password_reset', methods=['POST'])

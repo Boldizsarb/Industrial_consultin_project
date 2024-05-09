@@ -48,6 +48,7 @@ class DBPool:
                             email VARCHAR(255) NOT NULL UNIQUE,
                             number VARCHAR(20),
                             password VARCHAR(255) NOT NULL,
+                            token VARCHAR(255),
                             verification_token VARCHAR(255),
                             token_expiration TIMESTAMP,
                             verified BOOLEAN NOT NULL DEFAULT FALSE,
@@ -429,3 +430,20 @@ def verify_password(email, password):
             # Ensure the stored password hash is encoded to bytes
             return stored_password.encode('utf-8') if isinstance(stored_password, str) else stored_password
 
+
+def store_sesssion_token(email, token):
+    with DBPool.get_instance().getconn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE "user" SET token = %s WHERE email = %s
+            """, (token, email))
+            conn.commit()
+            return "Token stored successfully."
+
+
+def get_stored_token(token):
+    with DBPool.get_instance().getconn() as conn:
+        with conn.cursor() as cur:
+            cur.execute('SELECT token FROM "user" WHERE token = %s', (token,))
+            stored_token = cur.fetchone()
+            return stored_token[0] if stored_token else None
