@@ -59,6 +59,8 @@ class DBPool:
                 else:
                     return "Table 'user' already exists."
                 
+                
+                
     def create_table_password_reset_tokens_if_not_exists():
         with DBPool.get_instance().getconn() as conn:
             with conn.cursor() as cur:

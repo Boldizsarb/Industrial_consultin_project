@@ -31,8 +31,8 @@ def configure_routes(app, mail):
             if not all([first_name, last_name, email, phone_number, password]):
                 return jsonify({'error': 'All fields must be filled'}), 400
 
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-            hashed_password = hashed_password.decode('utf8')
+            hashed_password = bcrypt.hashpw(password.encode('SHA-256'), bcrypt.gensalt())
+            hashed_password = hashed_password.decode('SHA-256')
             verification_token = generate_jwt_token(email)
              
             print("Verification token generated:", verification_token)
@@ -86,7 +86,7 @@ def configure_routes(app, mail):
             
             password_hash = verify_password(email, password)
 
-            password = password.encode('utf-8')
+            password = password.encode('SHA-256')
             print(f"Received login request for user: {password}", file=sys.stderr)
 
             if password_hash and bcrypt.checkpw(password, password_hash):
