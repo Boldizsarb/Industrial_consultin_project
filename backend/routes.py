@@ -5,6 +5,7 @@ import jwt
 from email_sending import send_verification_email, send_password_reset_email
 import traceback
 import sys
+import hashlib
 import carApi
 import bus_api
 import train_api
@@ -30,7 +31,6 @@ def configure_routes(app, mail):
 
             if not all([first_name, last_name, email, phone_number, password]):
                 return jsonify({'error': 'All fields must be filled'}), 400
-
             hashed_password = hashlib.sha256(password.encode()).hexdigest()
             verification_token = generate_jwt_token(email)
              
@@ -95,6 +95,17 @@ def configure_routes(app, mail):
                 else:
                     return jsonify({'error': 'Invalid email or password'}), 401
 
+            stored_password_hash = verify_password(email)
+
+            if stored_password_hash:
+                password_hash = hashlib.sha256(password.encode()).hexdigest()
+                print(f"Received login request for user: {password_hash}", file=sys.stderr)
+
+                if password_hash == stored_password_hash:
+                    return jsonify({'Success': 'Logged in'}), 200
+                else:
+                    return jsonify({'error': 'Invalid email or password'}), 401
+            
         except Exception as e:
             logger.exception(f"Exception in login: {e}")
             return jsonify({'error': 'Failed to login'}), 500
@@ -155,6 +166,9 @@ def configure_routes(app, mail):
                 return jsonify({'error': 'Failed to update password'}), 500
         else:
             return jsonify({'error': error}), 400
+
+          
+          
     def _build_cors_preflight_response():
             response = make_response()
             response.headers['Access-Control-Allow-Origin'] = '*'

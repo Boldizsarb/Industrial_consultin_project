@@ -6,18 +6,22 @@ const routes = [
     name: "Main",
     component: () => import("../views/MainPage.vue"),
     meta: { hideMenu: true, requiresAuth: false, guestOnly: true },
+
   },
   {
     path: "/login",
     name: "Login",
     component: () => import("../views/Login.vue"),
+
     meta: { hideMenu: true, requiresAuth: false, guestOnly: true },
   },
   {
     path: "/signup",
     name: "SignUp",
     component: () => import("../views/Signup.vue"),
+
     meta: { hideMenu: true, requiresAuth: false, guestOnly: true },
+
   },
   {
     path: "/dashboard",
@@ -26,16 +30,28 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+
     path: "/about",
     name: "About",
     component: () => import("../views/About.vue"),
     meta: { requiresAuth: true },
   },
   {
+
     path: "/contact",
     name: "Contact",
     component: () => import("../views/Contact.vue"),
     meta: { requiresAuth: true },
+  },
+  {
+    path: "/calculateEmissions",
+    name: "CalculateEmissions",
+    component: () => import("../views/CalculateEmissions.vue"),
+  },
+  {
+    path: "/userDetails",
+    name: "UserDetails",
+    component: () => import("../views/UserDetails.vue"),
   },
   // Add more routes as needed
 ];

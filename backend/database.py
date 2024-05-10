@@ -5,6 +5,7 @@ import datetime
 import logging
 import os
 from dotenv import load_dotenv
+import hashlib
 from flask import jsonify
 import sys
 import bcrypt
@@ -468,3 +469,9 @@ def dellete_token(email):
             """, (None, email))
             conn.commit()
             return "Token deleted successfully."
+            if stored_password:
+                stored_password_hash = stored_password[0]
+                print("the password hash from DB is", stored_password_hash, file=sys.stderr)
+                return stored_password_hash
+            else:
+                return None
