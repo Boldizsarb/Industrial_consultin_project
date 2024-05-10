@@ -59,6 +59,7 @@ def configure_routes(app, mail):
                 'traceback': error_traceback
             }), 500
     
+    
     @app.route('/login', methods=['POST', 'OPTIONS'])
     def login():
         print("Received login request", file=sys.stderr)
@@ -134,6 +135,7 @@ def configure_routes(app, mail):
         else:
             return jsonify({'status': 'missing'})
 
+
     @app.route('/logout', methods=['POST'])
     def logout():
         # Get the token from the request headers
@@ -149,6 +151,7 @@ def configure_routes(app, mail):
                 return jsonify({'status': 'failed'})
         else:
             return jsonify({'status': 'missing'})
+        
 
     # This endpoint confirms the password reset using the token and updates the password
     @app.route('/confirm_password_reset', methods=['POST'])
