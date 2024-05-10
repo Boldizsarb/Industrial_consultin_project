@@ -2,14 +2,17 @@
   <navbar />
   <div class="min-h-screen flex justify-center items-center">
     <div
-      class="overflow-y-auto overflow-hidden max-h-[50vh] flex flex-col lg:flex-row shadow-lg rounded-lg w-full md:w-3/4 lg:w-3/4 bg-gray-500 bg-opacity-50 p-4 transition-opacity duration-700 ease-in"
+      class="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 w-full h-full max-h-[60vh] max-w-[80vw] flex flex-col lg:flex-row shadow-lg rounded-lg w-full md:w-3/4 lg:w-3/4 bg-gray-500 bg-opacity-50 p-4 transition-opacity duration-700 ease-in"
+      :class="{ 'opacity-100': isAnimated }"
     >
       <!-- Map Section -->
       <div class="w-full lg:w-1/2 mt-4 lg:mt-0">
         <div id="map" class="w-full h-96 lg:h-full"></div>
       </div>
       <!-- Form and Results Section with Vertical Scrollable Content and Max Height -->
-      <div class="w-full lg:w-1/2 p-4 space-y-4 lg:overflow-y-auto">
+      <div
+        class="w-full lg:w-1/2 p-4 space-y-4 lg:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200"
+      >
         <h1 class="text-3xl font-bold text-white mb-2">Calculate Emissions</h1>
         <div>
           <Co2TreesBar :co2Emission="co2Emission" />

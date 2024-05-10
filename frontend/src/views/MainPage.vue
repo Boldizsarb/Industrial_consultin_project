@@ -1,38 +1,53 @@
 <template>
+  <navbar />
   <div class="min-h-screen flex justify-center items-center">
     <div
-      class="w-3/4 bg-gray-200 bg-opacity-50 rounded-lg shadow-lg p-4 transition-opacity duration-700 ease-in opacity-0"
+      class="overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 w-full h-full max-h-[60vh] max-w-[80vw] bg-gray-200 bg-opacity-50 rounded-lg shadow-lg transition-opacity duration-700 ease-in opacity-0"
       :class="{ 'opacity-100': isAnimated }"
     >
-      <h1 class="text-4xl font-bold mb-4 text-slate-700">
-        Measure Your Carbon Footprint
-      </h1>
-      <p class="text-lg mb-6 text-slate-700">
-        Join us in our effort to make the earth a greener place. Start by
-        understanding your carbon footprint.
-      </p>
-      <div class="space-x-4 mt-6">
-        <router-link
-          to="/login"
-          class="bg-slate-700 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-          >Sign in</router-link
-        >
-        <router-link
-          to="/signup"
-          class="bg-slate-700 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-          >Create Account</router-link
-        >
-      </div>
+      <info />
     </div>
   </div>
+  <myFooter />
 </template>
 
 <script>
+import navbar from "@/components/MainPageNav.vue";
+import myFooter from "@/components/Footer.vue";
+import info from "@/components/MainPageInfo.vue";
+
 export default {
   name: "HomePage",
+  components: {
+    navbar,
+    myFooter,
+    info,
+  },
   data() {
     return {
       isAnimated: false,
+      heroStats: [
+        { title: "Global Average Emissions", value: "36.8 Billion Tons" },
+        { title: "Annual Increase", value: "2.5%" },
+        { title: "Impact on Temperature", value: "+1.5°C" },
+      ],
+      infoCards: [
+        {
+          title: "Impact on Health",
+          description:
+            "Rising emissions lead to more smog and respiratory problems, particularly affecting urban areas.",
+        },
+        {
+          title: "Ocean Acidification",
+          description:
+            "Increased CO2 levels are altering ocean chemistry, impacting marine life and food chains.",
+        },
+        {
+          title: "Solutions and Reductions",
+          description:
+            "Explore actionable ways to reduce emissions through renewable energy and lifestyle changes.",
+        },
+      ],
     };
   },
   mounted() {
