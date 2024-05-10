@@ -6,19 +6,16 @@ const routes = [
     path: "/",
     name: "Main",
     component: () => import("../views/MainPage.vue"),
-    meta: { hideMenu: true },
   },
   {
     path: "/login",
     name: "Login",
     component: () => import("../views/Login.vue"),
-    meta: { hideMenu: true },
   },
   {
     path: "/signup",
     name: "SignUp",
     component: () => import("../views/Signup.vue"),
-    meta: { hideMenu: true },
   },
   {
     path: "/dashboard",
@@ -26,14 +23,19 @@ const routes = [
     component: () => import("../views/Dashboard.vue"),
   },
   {
-    path: "/about",
-    name: "About",
-    component: () => import("../views/About.vue"),
-  },
-  {
     path: "/contact",
     name: "Contact",
     component: () => import("../views/Contact.vue"),
+  },
+  {
+    path: "/calculateEmissions",
+    name: "CalculateEmissions",
+    component: () => import("../views/CalculateEmissions.vue"),
+  },
+  {
+    path: "/userDetails",
+    name: "UserDetails",
+    component: () => import("../views/UserDetails.vue"),
   },
   // Add more routes as needed
 ];

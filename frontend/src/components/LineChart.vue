@@ -1,5 +1,7 @@
 <template>
-  <Bar id="my-chart-id" :options="chartOptions" :data="chartData" />
+  <div class="chart-container">
+    <Bar id="my-chart-id" :options="chartOptions" :data="chartData" />
+  </div>
 </template>
 
 <script>
@@ -26,25 +28,36 @@ ChartJS.register(
 export default {
   name: "BarChart",
   components: { Bar },
+  props: {
+    // Prop to receive the month-value pairs
+    monthValues: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
       chartData: {
-        labels: ["January", "February", "March"],
+        labels: [], // These will be populated dynamically
         datasets: [
           {
-            label: "Monthly Carbon Usage",
+            label: "Co2",
             backgroundColor: [
               "rgba(255, 99, 132, 0.6)",
               "rgba(54, 162, 235, 0.6)",
               "rgba(255, 206, 86, 0.6)",
+              "rgba(75, 192, 192, 0.6)",
+              "rgba(153, 102, 255, 0.6)",
             ],
             borderColor: [
               "rgba(255, 99, 132, 1)",
               "rgba(54, 162, 235, 1)",
               "rgba(255, 206, 86, 1)",
+              "rgba(75, 192, 192, 1)",
+              "rgba(153, 102, 255, 1)",
             ],
             borderWidth: 1,
-            data: [10, 25, 55],
+            data: [], // These will be populated dynamically
           },
         ],
       },
@@ -85,13 +98,39 @@ export default {
       },
     };
   },
+  watch: {
+    // Watch for changes in the input data and update the chart accordingly
+    monthValues: {
+      immediate: true,
+      handler(newData) {
+        this.updateChartData(newData);
+      },
+    },
+  },
+  methods: {
+    // Function to transform the input data into chart data
+    updateChartData(data) {
+      // Ensure valid entries and remove undefined/null values
+      const validEntries = Object.entries(data).filter(
+        ([key, value]) => key && value !== null && value !== undefined,
+      );
+
+      // Extract labels and data based on provided months and values
+      const labels = validEntries.map(([key]) => key);
+      const values = validEntries.map(([, value]) => value);
+
+      // Update the labels and data for the chart
+      this.chartData.labels = labels;
+      this.chartData.datasets[0].data = values;
+    },
+  },
 };
 </script>
 
 <style scoped>
-div {
+.chart-container {
+  height: 50vh; /* Fixed to 50% of the viewport height */
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
 </style>
