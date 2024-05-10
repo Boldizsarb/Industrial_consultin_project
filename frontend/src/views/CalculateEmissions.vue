@@ -2,7 +2,7 @@
   <navbar />
   <div class="min-h-screen flex justify-center items-center">
     <div
-      class="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 w-full h-full max-h-[60vh] max-w-[80vw] flex flex-col lg:flex-row shadow-lg rounded-lg w-full md:w-3/4 lg:w-3/4 bg-gray-500 bg-opacity-50 p-4 transition-opacity duration-700 ease-in"
+      class="w-full h-full p-32 flex flex-col lg:flex-row shadow-lg rounded-lg bg-gray-500 bg-opacity-50 p-4 transition-opacity duration-700 ease-in"
       :class="{ 'opacity-100': isAnimated }"
     >
       <!-- Map Section -->
@@ -11,7 +11,7 @@
       </div>
       <!-- Form and Results Section with Vertical Scrollable Content and Max Height -->
       <div
-        class="w-full lg:w-1/2 p-4 space-y-4 lg:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200"
+        class="w-full m-8 lg:w-1/2 space-y-4 lg:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200"
       >
         <h1 class="text-3xl font-bold text-white mb-2">Calculate Emissions</h1>
         <div>
@@ -21,79 +21,85 @@
           Here you will be able to see various information regarding your
           emission history.
         </p>
-        <div class="space-y-2 mb-4">
-          <input
-            v-if="this.travelMode === `DRIVING`"
-            id="reg-input"
-            type="text"
-            placeholder="Enter your Reg"
-            class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            v-if="this.travelMode === `DRIVING`"
-            id="people-input"
-            type="number"
-            placeholder="How many people"
-            class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            id="origin-input"
-            type="text"
-            placeholder="Enter origin"
-            class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            id="destination-input"
-            type="text"
-            placeholder="Enter destination"
-            class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <div class="bg-gray-100 p-4 rounded-lg shadow">
-            <ul class="list-disc list-inside space-y-2">
-              <label class="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="travelMode"
-                  value="DRIVING"
-                  v-model="travelMode"
-                  class="form-radio h-4 w-4 text-blue-600 mr-2"
-                />
-                <span class="text-sm font-medium text-gray-700">Driving</span>
-              </label>
+        <div class="flex justify-between items-start space-x-4 mb-4">
+          <div class="flex flex-col w-1/2 space-y-2">
+            <input
+              v-if="this.travelMode === `DRIVING`"
+              id="reg-input"
+              type="text"
+              placeholder="Enter your Reg"
+              class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              v-if="this.travelMode === `DRIVING`"
+              id="people-input"
+              type="number"
+              placeholder="How many people"
+              class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              id="origin-input"
+              type="text"
+              placeholder="Enter origin"
+              class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              id="destination-input"
+              type="text"
+              placeholder="Enter destination"
+              class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div class="flex-shrink-0 w-1/2">
+            <div class="bg-gray-100 p-4 rounded-lg shadow">
+              <ul class="list-disc list-inside space-y-2">
+                <label class="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="travelMode"
+                    value="DRIVING"
+                    v-model="travelMode"
+                    class="form-radio h-4 w-4 text-blue-600 mr-2"
+                  />
+                  <span class="text-sm font-medium text-gray-700">Driving</span>
+                </label>
 
-              <label class="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="travelMode"
-                  value="WALKING"
-                  v-model="travelMode"
-                  class="form-radio h-4 w-4 text-green-600 mr-2"
-                />
-                <span class="text-sm font-medium text-gray-700">Walking</span>
-              </label>
+                <label class="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="travelMode"
+                    value="WALKING"
+                    v-model="travelMode"
+                    class="form-radio h-4 w-4 text-green-600 mr-2"
+                  />
+                  <span class="text-sm font-medium text-gray-700">Walking</span>
+                </label>
 
-              <label class="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="travelMode"
-                  value="BICYCLING"
-                  v-model="travelMode"
-                  class="form-radio h-4 w-4 text-yellow-500 mr-2"
-                />
-                <span class="text-sm font-medium text-gray-700">Bicycling</span>
-              </label>
+                <label class="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="travelMode"
+                    value="BICYCLING"
+                    v-model="travelMode"
+                    class="form-radio h-4 w-4 text-yellow-500 mr-2"
+                  />
+                  <span class="text-sm font-medium text-gray-700"
+                    >Bicycling</span
+                  >
+                </label>
 
-              <label class="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="travelMode"
-                  value="TRANSIT"
-                  v-model="travelMode"
-                  class="form-radio h-4 w-4 text-purple-600 mr-2"
-                />
-                <span class="text-sm font-medium text-gray-700">Transit</span>
-              </label>
-            </ul>
+                <label class="flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="travelMode"
+                    value="TRANSIT"
+                    v-model="travelMode"
+                    class="form-radio h-4 w-4 text-purple-600 mr-2"
+                  />
+                  <span class="text-sm font-medium text-gray-700">Transit</span>
+                </label>
+              </ul>
+            </div>
           </div>
         </div>
         <button

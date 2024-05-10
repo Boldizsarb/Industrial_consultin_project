@@ -18,8 +18,10 @@ export default {
   text-align: center;
   color: #2c3e50;
   background-image: url("@/assets/images/home-page.jpg");
-  background-size: cover;
-  background-position: center center;
+  background-attachment: fixed; /* Ensures the background is static */
+  background-size: cover; /* Scales the image while maintaining aspect ratio */
+  background-repeat: no-repeat; /* Prevents tiling of the image */
+  background-position: center; /* Centers the image within the viewport */
   min-height: 100vh; /* Make sure the div takes at least the full viewport height */
 }
 </style>
