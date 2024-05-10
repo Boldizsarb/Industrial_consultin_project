@@ -2,7 +2,7 @@
   <navbar />
   <div class="min-h-screen flex justify-center items-center">
     <div
-      class="overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 w-full h-full max-h-[60vh] max-w-[80vw] bg-gray-200 bg-opacity-50 rounded-lg shadow-lg transition-opacity duration-700 ease-in opacity-0"
+      class="w-full h-full pt-32 bg-gray-200 bg-opacity-50 rounded-lg shadow-lg transition-opacity duration-700 ease-in opacity-0"
       :class="{ 'opacity-100': isAnimated }"
     >
       <info />

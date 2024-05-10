@@ -1,29 +1,31 @@
 <template>
   <div>
-    <div
-      class="container px-3 lg-auto flex flex-wrap flex-col lg:flex-row items-center text-black"
-    >
-      <!--Left Col-->
+    <section class="container mx-auto text-center py-6 mb-12 text-black">
       <div
-        class="flex flex-col w-full lg:w-2/5 justify-center items-start text-center lg:text-left"
+        class="container px-3 lg-auto flex flex-wrap flex-col lg:flex-row items-center text-black"
       >
-        <h1 class="my-4 text-5xl font-bold leading-tight">
-          CO2 emission what is this ?
-        </h1>
-        <p class="leading-normal text-2xl mb-8">
-          The global level of CO2 emissions from fossil fuels is increasing
-          dramatically year after year
-        </p>
-        <p class="leading-normal text-2xl mb-8">
-          For example, from 2000 to 2023, there was an increase of more than 10
-          billion metric tonnes of CO2
-        </p>
+        <!--Left Col-->
+        <div
+          class="flex flex-col w-full lg:w-2/5 justify-center items-start text-center lg:text-left"
+        >
+          <h1 class="my-4 text-5xl font-bold leading-tight">
+            CO2 emission what is this ?
+          </h1>
+          <p class="leading-normal text-2xl mb-8">
+            The global level of CO2 emissions from fossil fuels is increasing
+            dramatically year after year
+          </p>
+          <p class="leading-normal text-2xl mb-8">
+            For example, from 2000 to 2023, there was an increase of more than
+            10 billion metric tonnes of CO2
+          </p>
+        </div>
+        <!--Right Col-->
+        <div class="w-full lg:w-3/5 py-6 text-center">
+          <CO2LineChart />
+        </div>
       </div>
-      <!--Right Col-->
-      <div class="w-full lg:w-3/5 py-6 text-center">
-        <CO2LineChart />
-      </div>
-    </div>
+    </section>
   </div>
   <div class="relative -mt-12 lg:-mt-24">
     <svg
