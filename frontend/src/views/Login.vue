@@ -113,7 +113,7 @@ export default {
   },
   methods: {
     login() {
-      fetch("http://localhost:5000//login", {
+      fetch("http://localhost:5000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -126,11 +126,22 @@ export default {
         .then((response) => response.json())
         .then((data) => {
           console.log("Success:", data);
+          // Store the response data in a cookie
+          this.setCookie("token", data.token, 1); // Assuming the token is stored in data.token
           this.$router.push("/dashboard");
         })
         .catch((error) => {
           console.error("Error:", error);
         });
+    },
+    setCookie(name, value, days) {
+      let expires = "";
+      if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+        expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "") + expires + "; path=/";
     },
   },
 };
