@@ -15,7 +15,7 @@
           />
           <span
             class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
-            >CO2 Emissions</span
+            >Data Mango</span
           >
         </router-link>
       </div>
@@ -77,7 +77,7 @@
               aria-current="page"
             >
               <i class="fas fa-user-plus fa-fw"></i>
-              <span class="pb-1 md:pb-0 text-sm">Sing Up</span>
+              <span class="pb-1 md:pb-0 text-sm">Sign Up</span>
             </router-link>
           </li>
         </ul>

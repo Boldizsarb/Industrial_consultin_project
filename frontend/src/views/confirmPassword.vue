@@ -99,7 +99,7 @@ export default {
       }
     },
     confirmPasswordReset() {
-      if (!this.passwordsMatch) {
+      if (this.passwordsMatch) {
         alert("Passwords do not match");
         return;
       }

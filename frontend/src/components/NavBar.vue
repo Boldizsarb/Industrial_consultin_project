@@ -15,7 +15,7 @@
           />
           <span
             class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
-            >CO2 Emissions</span
+            >Data Mango</span
           >
         </router-link>
       </div>
