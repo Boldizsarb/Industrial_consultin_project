@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="container px-3 lg-auto flex flex-wrap flex-col lg:flex-row items-center"
+      class="container px-3 lg-auto flex flex-wrap flex-col lg:flex-row items-center text-black"
     >
       <!--Left Col-->
       <div
@@ -213,11 +213,9 @@
       </g>
     </g>
   </svg>
-  <section class="container mx-auto text-center py-6 mb-12">
+  <section class="container mx-auto text-center py-6 mb-12 text-black">
     <div class="container max-w-5xl mx-auto m-8">
-      <h2
-        class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800"
-      >
+      <h2 class="w-full my-2 text-5xl font-bold leading-tight text-center">
         How can we help the planet ?
       </h2>
       <div class="w-full mb-4">
@@ -234,7 +232,7 @@
           />
         </div>
         <div class="w-full lg:w-1/2 p-6">
-          <p class="text-gray-800 bold mb-8 text-center">
+          <p class="bold mb-8 text-center">
             Reducing our environmental impact is critical to saving the world
             and combating climate change. Here are some effective strategies.
           </p>
@@ -247,102 +245,108 @@
           ></div>
         </div>
         <div class="w-full lg:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
-          <div class="flex-1 rounded-t rounded-b-none overflow-hidden shadow">
-            <div class="w-full font-bold text-xl text-gray-800 px-6">
+          <div
+            class="flex-1 rounded-t rounded-b-none overflow-hidden shadow bg-white bg-opacity-50"
+          >
+            <div class="w-full font-bold text-xl px-6">
               Reduce Energy Consumption
             </div>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               Use energy-efficient appliances like LED light bulbs,
               refrigerators, and low-energy electronics.
             </p>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               Insulate Your Home, proper insulation minimises heating and
               cooling requirements.
             </p>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               Switch to Renewable Energy, Install solar panels or join a green
               energy plan.
             </p>
           </div>
         </div>
         <div class="w-full lg:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
-          <div class="flex-1 rounded-t rounded-b-none overflow-hidden shadow">
-            <div class="w-full font-bold text-xl text-gray-800 px-6">
+          <div
+            class="flex-1 rounded-t rounded-b-none overflow-hidden shadow bg-white bg-opacity-50"
+          >
+            <div class="w-full font-bold text-xl px-6">
               Adopt Sustainable Transportation
             </div>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               Public transport or carpooling, share rides or use buses and
               trains instead of driving alone.
             </p>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               For shorter distances, walk or cycle.
             </p>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               Consider converting to an EV if possible.
             </p>
           </div>
         </div>
         <div class="w-full lg:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
-          <div class="flex-1 rounded-t rounded-b-none overflow-hidden shadow">
-            <div class="w-full font-bold text-xl text-gray-800 px-6">
-              Conserve Water
-            </div>
-            <p class="text-gray-800 text-base px-6 mb-5">
+          <div
+            class="flex-1 rounded-t rounded-b-none overflow-hidden shadow bg-white bg-opacity-50"
+          >
+            <div class="w-full font-bold text-xl px-6">Conserve Water</div>
+            <p class="text-base px-6 mb-5">
               Patch leaks promptly to avoid waste.
             </p>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               Shorten your showers and investigate low-flow devices.
             </p>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               Collect rainwater and use rain barrels to water your plants.
             </p>
           </div>
         </div>
         <div class="w-full lg:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
-          <div class="flex-1 rounded-t rounded-b-none overflow-hidden shadow">
-            <div class="w-full font-bold text-xl text-gray-800 px-6">
-              Reduce Waste
-            </div>
-            <p class="text-gray-800 text-base px-6 mb-5">
+          <div
+            class="flex-1 rounded-t rounded-b-none overflow-hidden shadow bg-white bg-opacity-50"
+          >
+            <div class="w-full font-bold text-xl px-6">Reduce Waste</div>
+            <p class="text-base px-6 mb-5">
               Reduce waste by properly recycling and composting organic items.
             </p>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               Avoid single-use plastics by using reusable containers, bottles,
               and bags.
             </p>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               Buy Less, choose things that are sturdy and long-lasting to reduce
               consumption.
             </p>
           </div>
         </div>
         <div class="w-full lg:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
-          <div class="flex-1 rounded-t rounded-b-none overflow-hidden shadow">
-            <div class="w-full font-bold text-xl text-gray-800 px-6">
-              Eat sustainably
-            </div>
-            <p class="text-gray-800 text-base px-6 mb-5">
+          <div
+            class="flex-1 rounded-t rounded-b-none overflow-hidden shadow bg-white bg-opacity-50"
+          >
+            <div class="w-full font-bold text-xl px-6">Eat sustainably</div>
+            <p class="text-base px-6 mb-5">
               Plant-Based Diet eating more plant-based meals and less red meat.
             </p>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               Purchase locally farmed, seasonal produce to help reduce
               transportation emissions.
             </p>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               Reduce Food Waste planing meals around perishable items and store
               leftovers correctly.
             </p>
           </div>
         </div>
         <div class="w-full lg:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
-          <div class="flex-1 rounded-t rounded-b-none overflow-hidden shadow">
-            <div class="w-full font-bold text-xl text-gray-800 px-6">
+          <div
+            class="flex-1 rounded-t rounded-b-none overflow-hidden shadow bg-white bg-opacity-50"
+          >
+            <div class="w-full font-bold text-xl px-6">
               Support conservation efforts
             </div>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               Reforestation participating in or support tree-planting activities
             </p>
-            <p class="text-gray-800 text-base px-6 mb-5">
+            <p class="text-base px-6 mb-5">
               Wildlife Protection, promoting the preservation of natural areas
               and endangered animals.
             </p>

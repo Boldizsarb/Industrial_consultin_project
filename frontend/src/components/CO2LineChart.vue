@@ -86,7 +86,7 @@ export default {
           legend: {
             position: "top",
             labels: {
-              color: "#333", // Adjust to desired label color
+              color: "#000", // Adjust to desired label color
             },
           },
           tooltip: {
@@ -98,7 +98,7 @@ export default {
         scales: {
           x: {
             ticks: {
-              color: "#333",
+              color: "#000",
             },
             grid: {
               color: "rgba(0, 0, 0, 0.1)",
@@ -106,7 +106,7 @@ export default {
           },
           y: {
             ticks: {
-              color: "#333",
+              color: "#000",
             },
             grid: {
               color: "rgba(0, 0, 0, 0.1)",
@@ -114,7 +114,7 @@ export default {
             title: {
               display: true,
               text: "Billion Metric Tons",
-              color: "#333",
+              color: "#000",
             },
           },
         },

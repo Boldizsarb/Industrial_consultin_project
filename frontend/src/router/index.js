@@ -6,7 +6,6 @@ const routes = [
     name: "Main",
     component: () => import("../views/MainPage.vue"),
     meta: { hideMenu: true, requiresAuth: false, guestOnly: true },
-
   },
   {
     path: "/login",
@@ -21,26 +20,11 @@ const routes = [
     component: () => import("../views/Signup.vue"),
 
     meta: { hideMenu: true, requiresAuth: false, guestOnly: true },
-
   },
   {
     path: "/dashboard",
     name: "Dashboard",
     component: () => import("../views/Dashboard.vue"),
-    meta: { requiresAuth: true },
-  },
-  {
-
-    path: "/about",
-    name: "About",
-    component: () => import("../views/About.vue"),
-    meta: { requiresAuth: true },
-  },
-  {
-
-    path: "/contact",
-    name: "Contact",
-    component: () => import("../views/Contact.vue"),
     meta: { requiresAuth: true },
   },
   {
@@ -52,6 +36,21 @@ const routes = [
     path: "/userDetails",
     name: "UserDetails",
     component: () => import("../views/UserDetails.vue"),
+  },
+  {
+    path: "/forgotPassword",
+    name: "ForgotPassword",
+    component: () => import("../views/ConfirmPassword.vue"),
+  },
+  {
+    path: "/confirmEmail",
+    name: "ConfirmEmail",
+    component: () => import("../views/ConfirmEmail.vue"),
+  },
+  {
+    path: "/redirect",
+    name: "RedirectPage",
+    component: () => import("../views/Redirect.vue"),
   },
   // Add more routes as needed
 ];

@@ -1,7 +1,15 @@
 <template>
-  <div>
-    <h1>Redirecting...</h1>
-    <p>Redirecting to login page in {{ countdown }} seconds.</p>
+  <div class="min-h-screen flex items-center justify-center">
+    <div
+      class="w-2/3 flex min-h-screen max-w-screen-sm items-center justify-center transition-opacity duration-700 ease-in opacity-0 fade-bottom"
+      :class="{ 'opacity-100': isAnimated }"
+      @mouseenter="isAnimated = true"
+    >
+      <div class="relative bg-gray-200 bg-opacity-50 rounded-lg p-4 w-full">
+        <h1>Redirecting...</h1>
+        <p>Redirecting to login page in {{ countdown }} seconds.</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -10,12 +18,16 @@ export default {
   name: "RedirectPage",
   data() {
     return {
-      countdown: 5, // Initial countdown value
+      countdown: 5,
+      isAnimated: false,
     };
   },
   mounted() {
     // Start countdown
     this.startCountdown();
+    setTimeout(() => {
+      this.isAnimated = true;
+    }, 100);
   },
   methods: {
     startCountdown() {
