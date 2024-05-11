@@ -25,7 +25,7 @@
         <li>
           <button
             @click="logout"
-            class="w-full px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
+            class="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
           >
             Logout
           </button>
@@ -47,10 +47,16 @@ export default {
       this.menuVisible = !this.menuVisible;
     },
     logout() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found.");
+        return;
+      }
       fetch(`${process.env.VUE_APP_BACKEND_URL}/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => {
@@ -60,7 +66,9 @@ export default {
           return response.json();
         })
         .then((data) => {
-          console.log(data.message);
+          console.log(data.status);
+          localStorage.removeItem("token");
+          this.$router.push("/login");
         })
         .catch((error) => {
           console.error("There was a problem adding the trip:", error);

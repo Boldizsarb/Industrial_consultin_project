@@ -75,6 +75,17 @@
               />
             </div>
             <div>
+              <label for="companySearch" class="sr-only">Company Search</label>
+              <input
+                id="companySearch"
+                name="companySearch"
+                type="text"
+                v-model="companySearchTerm"
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Search Company"
+              />
+            </div>
+            <div>
               <label for="password" class="sr-only">Password</label>
               <input
                 id="password"
@@ -137,6 +148,7 @@ export default {
       firstName: "",
       lastName: "",
       phoneNumber: "",
+      companySearchTerm: "",
       isAnimated: false,
     };
   },
@@ -225,6 +237,49 @@ export default {
             alert(`Error during signup: ${error.message}`);
           }
         });
+      if (this.companySearchTerm.trim() !== "") {
+        // Make request
+        fetch(
+          `https://api.company-information.service.gov.uk/search/companies?q={this.companySearchTerm}&items_per_page=10&start_index=0`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        )
+          .then((data) => {
+            // Extract company names from the response
+            const companyNames = data.items.map((item) => item.title);
+            console.log("Company names:", companyNames);
+          })
+          .catch((error) => {
+            console.error("Error during company search:", error);
+            if (error instanceof Response && error.status === 500) {
+              // If the error is a network response with a 500 status, try to get JSON
+              error
+                .json()
+                .then((err) => {
+                  alert(
+                    `Error during company search: ${
+                      err.message || "An unexpected server error occurred."
+                    }`,
+                  );
+                })
+                .catch((jsonError) => {
+                  // The response might not be in JSON format, hence the error
+                  alert(
+                    `Error during company search: ${
+                      jsonError.statusText || "An unexpected error occurred."
+                    }`,
+                  );
+                });
+            } else {
+              // If the error is not a network error, display its message directly
+              alert(`Error during company search: ${error.message}`);
+            }
+          });
+      }
     },
   },
 };

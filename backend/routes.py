@@ -85,8 +85,19 @@ def configure_routes(app, mail):
 
             stored_password_hash = verify_password(email)
             token = hashlib.sha256(email.encode()).hexdigest()
+            # Retrieve user data from the database using the email
+            user_data = get_user_data_by_email(email)
+            if not user_data:
+                return jsonify({'error': 'User not found'}), 404
+            # Extract the user's first name
+            print("Checking:",user_data)
+            firstname = user_data.get('first_name')
+            print("Checking:",firstname)
             print(f"Received login request for user: {token}", file=sys.stderr)
-            store_sesssion_token(token,email)
+            # Generate token with expiration
+            session_token = generate_token(firstname, email, app.config['SECRET_KEY'])
+
+            store_sesssion_token(session_token, email)
             if stored_password_hash:
                 password_hash = hashlib.sha256(password.encode()).hexdigest()
                 print(f"Received login request for user: {password_hash}", file=sys.stderr)
@@ -103,13 +114,14 @@ def configure_routes(app, mail):
                 print(f"Received login request for user: {password_hash}", file=sys.stderr)
 
                 if password_hash == stored_password_hash:
-                    return jsonify({'Success': 'Logged in'}), 200
+                    return jsonify({'Success': 'Logged in', 'token': session_token}), 200
                 else:
                     return jsonify({'error': 'Invalid email or password'}), 401
             
         except Exception as e:
             logger.exception(f"Exception in login: {e}")
             return jsonify({'error': 'Failed to login'}), 500
+
         
     @app.route('/verify-token', methods=['POST'])
     def verify_token():
@@ -138,19 +150,30 @@ def configure_routes(app, mail):
 
     @app.route('/logout', methods=['POST'])
     def logout():
-        # Get the token from the request headers
-        token = request.headers.get('Authorization')
-        if token:
-            # Decode the token
+        try:
+            # Get the token from the request headers
+            token = request.headers.get('Authorization')
+            if not token:
+                return jsonify({'error': 'Missing token'}), 401
+
+            # Decode the token to extract the email
             decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-            # Remove the token from the database or storage
-            if remove_stored_token(token):
-                dellete_token(decoded_token['email'])
-                return jsonify({'status': 'success'})
+            email = decoded_token.get('email')
+            if not email:
+                return jsonify({'error': 'Missing email in token'}), 401
+
+            # Remove the token from the database
+            if remove_stored_token(email):
+                return jsonify({'status': 'success'}), 200
             else:
-                return jsonify({'status': 'failed'})
-        else:
-            return jsonify({'status': 'missing'})
+                return jsonify({'error': 'Failed to remove token'}), 500
+        except jwt.ExpiredSignatureError:
+            return jsonify({'error': 'Expired token'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'error': 'Invalid token'}), 401
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
         
 
     # This endpoint confirms the password reset using the token and updates the password
@@ -170,8 +193,68 @@ def configure_routes(app, mail):
         else:
             return jsonify({'error': error}), 400
 
+    @app.route('/user/firstname', methods=['GET'])
+    def get_user_firstname():
+        try:
+            # Log when the route is accessed
+            logging.info('GET request received for /user/firstname')
+
+            # Extract the token from the request headers
+            token = request.headers.get('Authorization')
+
+            if not token:
+                # Log if token is missing
+                logging.warning('Token is missing in the request headers')
+                return jsonify({'error': 'Missing token'}), 401
+
+            # Decode the token to extract the user's email
+            decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            print("Decoded token:", decoded_token)
+            email = decoded_token.get('email')
+
+            if not email:
+                # Log if email is not found in the token
+                logging.warning('Email not found in the token')
+                return jsonify({'error': 'Email not found in token'}), 401
+
+            # Retrieve user data from the database using the email
+            user_data = get_user_data_by_email(email)
+
+            if not user_data:
+                # Log if user data is not found in the database
+                logging.warning('User data not found in the database')
+                return jsonify({'error': 'User not found'}), 404
+
+            # Extract and return the user's first name
+            first_name = user_data.get('first_name')
+
+            if not first_name:
+                # Log if first name is not found for the user
+                logging.warning('First name not found for user')
+                return jsonify({'error': 'First name not found for user'}), 500
+
+            # Log when the first name is successfully retrieved
+            logging.info(f'First name retrieved for user: {first_name}')
+
+            return jsonify({'first_name': first_name}), 200
+
+        except jwt.ExpiredSignatureError:
+            # Log if token is expired
+            logging.error('Expired token')
+            return jsonify({'error': 'Expired token'}), 401
+        except jwt.InvalidTokenError:
+            # Log if token is invalid
+            logging.error('Invalid token')
+            return jsonify({'error': 'Invalid token'}), 401
+        except Exception as e:
+            # Log any other exceptions
+            logging.exception('Internal server error')
+            return jsonify({'error': 'Internal server error'}), 500
+
           
-          
+
+
+
     def _build_cors_preflight_response():
             response = make_response()
             response.headers['Access-Control-Allow-Origin'] = '*'
@@ -196,6 +279,7 @@ def configure_routes(app, mail):
             return jsonify({'error': 'Failed to generate password reset token'}), 500
         return jsonify({'error': 'User not found'}), 404
     
+
     @app.route('/calculate_emission', methods=['POST'])
     def calculate_emission():
         data = request.json

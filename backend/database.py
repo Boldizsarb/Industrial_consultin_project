@@ -456,22 +456,68 @@ def get_stored_token(token):
     with DBPool.get_instance().getconn() as conn:
         print("Token to retrieve:", token, file=sys.stderr)
         with conn.cursor() as cur:
-            cur.execute('SELECT token FROM "user" WHERE token = %s', (token,))
-            stored_token = cur.fetchone()   
+            cur.execute('SELECT token, first_name FROM "user" WHERE token = %s', (token,))
+            stored_token, first_name = cur.fetchone()   
             print("Token retrieved ", stored_token, file=sys.stderr)
-            return stored_token[0] if stored_token else None
+            return stored_token, first_name if stored_token else None
 
-def dellete_token(email):
+
+def get_user_data_by_email(email):
     with DBPool.get_instance().getconn() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                UPDATE "user" SET token = %s WHERE email = %s
-            """, (None, email))
-            conn.commit()
-            return "Token deleted successfully."
-            if stored_password:
-                stored_password_hash = stored_password[0]
-                print("the password hash from DB is", stored_password_hash, file=sys.stderr)
-                return stored_password_hash
-            else:
-                return None
+        cursor = conn.cursor()
+        query = 'SELECT first_name FROM "user" WHERE email = %s'
+        cursor.execute(query, (email,))
+        user_data = cursor.fetchone()
+        cursor.close()
+        
+        if user_data:
+            # Return user data as a dictionary
+            return {'first_name': user_data[0]}
+        else:
+            return None
+
+
+def delete_token(email):
+    """
+    Delete the token associated with the given email address.
+    """
+    try:
+        with DBPool.get_instance().getconn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    UPDATE "user" SET token = %s WHERE email = %s
+                """, (None, email))
+                conn.commit()
+        return "Token deleted successfully."
+    except Exception as e:
+        print("Error deleting token associated with email:", e)
+        return None  # Indicate failure to delete token
+
+
+# Function to generate JWT token with expiration time
+def generate_token(first_name, email, secret_key, expiration_hours=3):
+    # Convert the secret_key to a string if it's not already
+    secret_key_str = str(secret_key)
+
+    # Set expiration time to 3 hours from now
+    expiration_time = datetime.datetime.utcnow() + datetime.timedelta(hours=expiration_hours)
+    payload = {'first_name': first_name, 'email': email, 'exp': expiration_time}
+    token = jwt.encode(payload, secret_key_str, algorithm='HS256')
+    return token  # Remove .decode('utf-8')
+
+
+def remove_stored_token(email):
+    """
+    Remove the token from the database associated with the given email address.
+    """
+    try:
+        with DBPool.get_instance().getconn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    UPDATE "user" SET token = NULL WHERE email = %s
+                """, (email,))
+                conn.commit()
+        return True  # Indicate successful token removal
+    except Exception as e:
+        print("Error removing token from storage:", e)
+        return False  # Indicate failure to remove token

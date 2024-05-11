@@ -30,7 +30,7 @@
                   alt="User Logo"
                 />
                 <span class="inline-block text-gray-100 hover:text-blue-400"
-                  >Hi, Renato</span
+                  >Hi, {{ firstName }}</span
                 >
                 <svg
                   class="pl-2 h-2 fill-current text-gray-100"
@@ -121,6 +121,7 @@ export default {
   data() {
     return {
       isMenuOpen: false,
+      firstName: "",
     };
   },
   components: {
@@ -130,6 +131,28 @@ export default {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
     },
+    fetchUserData() {
+      const token = localStorage.getItem("token");
+      console.log("Retrieved token:", token);
+      fetch(`${process.env.VUE_APP_BACKEND_URL}/user/firstname`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Response from the backend:", data);
+          this.firstName = data.first_name;
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    },
+  },
+  mounted() {
+    this.fetchUserData();
   },
 };
 </script>
