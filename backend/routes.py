@@ -10,6 +10,8 @@ import carApi
 import bus_api
 import train_api
 
+
+JWT_SECRETS = os.getenv('JWT_SECRET')
 def configure_routes(app, mail):
 
     @app.route('/signup', methods=['POST', 'OPTIONS'])
@@ -90,20 +92,20 @@ def configure_routes(app, mail):
             if not user_data:
                 return jsonify({'error': 'User not found'}), 404
             # Extract the user's first name
-            print("Checking:",user_data)
+            print("Checking:",user_data, file=sys.stderr)
             firstname = user_data.get('first_name')
-            print("Checking:",firstname)
+            print("Checking:",firstname, file=sys.stderr)
             print(f"Received login request for user: {token}", file=sys.stderr)
             # Generate token with expiration
-            session_token = generate_token(firstname, email, app.config['SECRET_KEY'])
-
+            session_token = generate_token(firstname, email, JWT_SECRET)
+            print("Try:",session_token, file=sys.stderr)
             store_sesssion_token(session_token, email)
             if stored_password_hash:
                 password_hash = hashlib.sha256(password.encode()).hexdigest()
                 print(f"Received login request for user: {password_hash}", file=sys.stderr)
 
                 if password_hash == stored_password_hash:
-                    return jsonify({'Success': 'Logged in', 'token' : token }), 200
+                    return jsonify({'Success': 'Logged in', 'token' : session_token }), 200
                 else:
                     return jsonify({'error': 'Invalid email or password'}), 401
 
@@ -157,7 +159,7 @@ def configure_routes(app, mail):
                 return jsonify({'error': 'Missing token'}), 401
 
             # Decode the token to extract the email
-            decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            decoded_token = jwt.decode(token, JWT_SECRETS, algorithms=['HS256'])
             email = decoded_token.get('email')
             if not email:
                 return jsonify({'error': 'Missing email in token'}), 401
@@ -193,63 +195,46 @@ def configure_routes(app, mail):
         else:
             return jsonify({'error': error}), 400
 
+
     @app.route('/user/firstname', methods=['GET'])
     def get_user_firstname():
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith("Bearer "):
+            logging.warning('No token provided', file=sys.stderr)
+            return jsonify({'error': 'Missing token'}), 401
+        
+        token = auth_header.split(" ")[1]
         try:
-            # Log when the route is accessed
-            logging.info('GET request received for /user/firstname')
-
-            # Extract the token from the request headers
-            token = request.headers.get('Authorization')
-
-            if not token:
-                # Log if token is missing
-                logging.warning('Token is missing in the request headers')
-                return jsonify({'error': 'Missing token'}), 401
-
-            # Decode the token to extract the user's email
-            decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-            print("Decoded token:", decoded_token)
-            email = decoded_token.get('email')
-
-            if not email:
-                # Log if email is not found in the token
-                logging.warning('Email not found in the token')
-                return jsonify({'error': 'Email not found in token'}), 401
-
-            # Retrieve user data from the database using the email
-            user_data = get_user_data_by_email(email)
-
-            if not user_data:
-                # Log if user data is not found in the database
-                logging.warning('User data not found in the database')
-                return jsonify({'error': 'User not found'}), 404
-
-            # Extract and return the user's first name
-            first_name = user_data.get('first_name')
-
-            if not first_name:
-                # Log if first name is not found for the user
-                logging.warning('First name not found for user')
-                return jsonify({'error': 'First name not found for user'}), 500
-
-            # Log when the first name is successfully retrieved
-            logging.info(f'First name retrieved for user: {first_name}')
-
-            return jsonify({'first_name': first_name}), 200
-
+            logging.info('Attempting to decode token', file=sys.stderr)
+            decoded_token = jwt.decode(token, JWT_SECRETS, algorithms=['HS256'])
+            logging.info('Token decoded successfully')
         except jwt.ExpiredSignatureError:
-            # Log if token is expired
-            logging.error('Expired token')
+            logging.error('Token expired')
             return jsonify({'error': 'Expired token'}), 401
         except jwt.InvalidTokenError:
-            # Log if token is invalid
             logging.error('Invalid token')
             return jsonify({'error': 'Invalid token'}), 401
         except Exception as e:
-            # Log any other exceptions
-            logging.exception('Internal server error')
+            logging.exception('Error decoding token')
             return jsonify({'error': 'Internal server error'}), 500
+
+        email = decoded_token.get('email')
+        if not email:
+            logging.warning('Email not found in token')
+            return jsonify({'error': 'Email not found in token'}), 401
+
+        user_data = get_user_data_by_email(email)
+        if not user_data:
+            logging.warning('User data not found')
+            return jsonify({'error': 'User not found'}), 404
+
+        first_name = user_data.get('first_name')
+        print("FIrstName in the get_user_firstname:", first_name, file=sys.stderr)
+        if not first_name:
+            logging.warning('First name not found for user')
+            return jsonify({'error': 'First name not found for user'}), 500
+
+        return jsonify({'first_name': first_name}), 200
 
           
 
@@ -258,7 +243,7 @@ def configure_routes(app, mail):
     def _build_cors_preflight_response():
             response = make_response()
             response.headers['Access-Control-Allow-Origin'] = '*'
-            response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+            response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS, GET'
             response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
             return response
         

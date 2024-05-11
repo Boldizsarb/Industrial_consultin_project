@@ -131,20 +131,34 @@ export default {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
     },
+    getCookie(name) {
+      let cookieArray = document.cookie.split(";");
+      for (let i = 0; i < cookieArray.length; i++) {
+        let cookiePair = cookieArray[i].split("=");
+        if (name === cookiePair[0].trim()) {
+          return decodeURIComponent(cookiePair[1]);
+        }
+      }
+      return null;
+    },
     fetchUserData() {
-      const token = localStorage.getItem("token");
-      console.log("Retrieved token:", token);
+      const token = this.getCookie("token");
+      console.log("Retrieved token frontend:", token);
       fetch(`${process.env.VUE_APP_BACKEND_URL}/user/firstname`, {
         method: "GET",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
         },
       })
         .then((response) => response.json())
         .then((data) => {
           console.log("Response from the backend:", data);
-          this.firstName = data.first_name;
+          if (data.first_name) {
+            this.firstName = data.first_name;
+          } else {
+            console.error("Failed to fetch user data:", data.error);
+          }
         })
         .catch((error) => {
           console.error("Error:", error);

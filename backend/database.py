@@ -503,7 +503,7 @@ def generate_token(first_name, email, secret_key, expiration_hours=3):
     expiration_time = datetime.datetime.utcnow() + datetime.timedelta(hours=expiration_hours)
     payload = {'first_name': first_name, 'email': email, 'exp': expiration_time}
     token = jwt.encode(payload, secret_key_str, algorithm='HS256')
-    return token  # Remove .decode('utf-8')
+    return token  
 
 
 def remove_stored_token(email):
