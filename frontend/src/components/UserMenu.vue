@@ -46,10 +46,21 @@ export default {
     toggleMenu() {
       this.menuVisible = !this.menuVisible;
     },
+    getCookie(name) {
+      let cookieArray = document.cookie.split(";");
+      for (let i = 0; i < cookieArray.length; i++) {
+        let cookiePair = cookieArray[i].split("=");
+        if (name === cookiePair[0].trim()) {
+          return decodeURIComponent(cookiePair[1]);
+        }
+      }
+      return null;
+    },
     logout() {
-      const token = localStorage.getItem("token");
+      const token = this.getCookie("token");
       if (!token) {
         console.error("No token found.");
+        this.$router.push("/login");
         return;
       }
       fetch(`${process.env.VUE_APP_BACKEND_URL}/logout`, {
@@ -60,18 +71,19 @@ export default {
         },
       })
         .then((response) => {
+          console.log("Logout response received"); // Debugging log
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
           return response.json();
         })
         .then((data) => {
-          console.log(data.status);
-          localStorage.removeItem("token");
           this.$router.push("/login");
+          console.log("Logout successful:", data); // Debugging log
         })
         .catch((error) => {
-          console.error("There was a problem adding the trip:", error);
+          console.error("Error during logout:", error);
+          this.$router.push("/login");
         });
     },
     handleClickOutside(event) {
@@ -83,6 +95,7 @@ export default {
       }
     },
   },
+
   mounted() {
     document.addEventListener("click", this.handleClickOutside);
   },

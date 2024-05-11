@@ -154,21 +154,26 @@ def configure_routes(app, mail):
     def logout():
         try:
             # Get the token from the request headers
-            token = request.headers.get('Authorization')
-            if not token:
+            token_header = request.headers.get('Authorization')
+            if not token_header:
                 return jsonify({'error': 'Missing token'}), 401
-
+            
+            token = token_header.split(' ')[1]
             # Decode the token to extract the email
-            decoded_token = jwt.decode(token, JWT_SECRETS, algorithms=['HS256'])
+            decoded_token = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
             email = decoded_token.get('email')
             if not email:
                 return jsonify({'error': 'Missing email in token'}), 401
 
             # Remove the token from the database
             if remove_stored_token(email):
-                return jsonify({'status': 'success'}), 200
+                # Create a response object and clear the cookie
+                response = make_response(jsonify({'status': 'success'}))
+                response.set_cookie('token', '', expires=0, path='/')
+                return response
             else:
                 return jsonify({'error': 'Failed to remove token'}), 500
+
         except jwt.ExpiredSignatureError:
             return jsonify({'error': 'Expired token'}), 401
         except jwt.InvalidTokenError:
