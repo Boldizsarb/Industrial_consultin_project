@@ -40,17 +40,17 @@ const routes = [
   {
     path: "/confirmPassword/:token",
     name: "ForgotPassword",
-    component: () => import("../views/confirmPassword.vue"),
+    component: () => import("../views/ConfirmPassword.vue"),
   },
   {
     path: "/confirmEmail",
     name: "ConfirmEmail",
-    component: () => import("../views/confirmEmail.vue"),
+    component: () => import("../views/ConfirmEmail.vue"),
   },
   {
     path: "/redirect",
     name: "RedirectPage",
-    component: () => import("../views/redirect.vue"),
+    component: () => import("../views/Redirect.vue"),
   },
   // Add more routes as needed
 ];

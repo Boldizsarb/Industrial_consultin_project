@@ -25,7 +25,7 @@
         <li>
           <button
             @click="logout"
-            class="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
+            class="w-full px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
           >
             Logout
           </button>
@@ -60,7 +60,7 @@ export default {
       const token = this.getCookie("token");
       if (!token) {
         console.error("No token found.");
-        this.$router.push("/login");
+        this.$router.push("/");
         return;
       }
       fetch(`${process.env.VUE_APP_BACKEND_URL}/logout`, {
@@ -78,12 +78,16 @@ export default {
           return response.json();
         })
         .then((data) => {
-          this.$router.push("/login");
+          document.cookie =
+            "token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+          this.$router.push("/");
           console.log("Logout successful:", data); // Debugging log
         })
         .catch((error) => {
           console.error("Error during logout:", error);
-          this.$router.push("/login");
+          document.cookie =
+            "token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+          this.$router.push("/");
         });
     },
     handleClickOutside(event) {
