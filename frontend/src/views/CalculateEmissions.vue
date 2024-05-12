@@ -1,8 +1,10 @@
 <template>
   <navbar />
-  <div class="min-h-screen flex justify-center items-center">
+  <div
+    class="bg-gray-200 bg-opacity-50 min-h-screen flex justify-center items-center"
+  >
     <div
-      class="w-full h-full p-32 flex flex-col lg:flex-row shadow-lg rounded-lg bg-gray-500 bg-opacity-50 p-4 transition-opacity duration-700 ease-in"
+      class="w-full h-full lg:max-h-[80vh] flex flex-col lg:flex-row py-32 px-8 lg:py-16 transition-opacity duration-700 ease-in"
       :class="{ 'opacity-100': isAnimated }"
     >
       <!-- Map Section -->
@@ -107,13 +109,13 @@
         >
           <button
             @click="searchRoute"
-            class="w-1/2 py-2 px-4 bg-slate-800 text-white rounded hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
+            class="w-full md-w-1/2 py-2 px-4 bg-slate-800 text-white rounded hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
           >
             Search Route
           </button>
           <button
             @click="addRoute"
-            class="w-1/2 py-2 px-4 bg-slate-800 text-white rounded hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
+            class="w-full md-w-1/2 py-2 px-4 bg-slate-800 text-white rounded hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
           >
             Add Route
           </button>
@@ -167,7 +169,7 @@ export default {
     };
   },
   setup() {
-    let co2Emission = ref(200);
+    let co2Emission = ref(13000);
     const map = ref(null);
     const travelMode = ref("DRIVING");
     const directionsService = new google.maps.DirectionsService();
@@ -337,83 +339,100 @@ export default {
       map.value.fitBounds(bounds);
     };
 
-    const getCo2Emission = async (selectedIndex, transport, dist) => {
+    const getCo2Emission = (selectedIndex, transport, dist) => {
+      const token = this.getCookie("token");
+      if (!token) {
+        console.error("No token found.");
+        this.$router.push("/");
+        return;
+      }
       const selectedRoute = routeAlternatives.value[selectedIndex];
       console.log(selectedRoute);
       let distance = dist;
       let people = selectedRoute.people;
       let reg = selectedRoute.reg;
       const miles = distance * 0.621371;
-      let totalCo2Emission = 0;
       console.log("CO2:", co2Emission.value);
       if (transport === "DRIVING") {
-        try {
-          const response = await fetch("/calculate_emission", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              reg: reg,
-              miles: miles,
-              num_pessangers: people,
-            }),
+        fetch(`${process.env.VUE_APP_BACKEND_URL}/calculate_emission`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            reg: reg,
+            miles: miles,
+            num_pessangers: people,
+          }),
+        })
+          .then((response) => {
+            console.log("Logout response received"); // Debugging log
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("car co2:", data.total_emmission_in_miles);
+            co2Emission.value += data.total_emmission_in_miles;
+          })
+          .catch((error) => {
+            console.error("Error calculating CO2 emissions:", error);
           });
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const result = await response.json();
-          const { total_emmission_in_miles } = result;
-          totalCo2Emission += total_emmission_in_miles;
-        } catch (error) {
-          console.error("Error calculating CO2 emissions:", error);
-        }
       } else if (transport === "BUS") {
-        try {
-          const response = await fetch("/calculate_bus_emission", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              miles: miles,
-              num_pessangers: people,
-            }),
+        fetch(`${process.env.VUE_APP_BACKEND_URL}/calculate_bus_emission`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            miles: miles,
+            num_pessangers: people,
+          }),
+        })
+          .then((response) => {
+            console.log("Logout response received"); // Debugging log
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("bus co2:", data.message);
+            co2Emission.value += Number(data.message);
+          })
+          .catch((error) => {
+            console.error("Error calculating CO2 emissions:", error);
           });
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const result = await response.json();
-          const { message } = result;
-          totalCo2Emission += message;
-        } catch (error) {
-          console.error("Error calculating CO2 emissions:", error);
-        }
       } else if (transport === "TRAIN") {
-        try {
-          const response = await fetch("/calculate_train_emission", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              miles: miles,
-              num_pessangers: people,
-            }),
+        fetch(`${process.env.VUE_APP_BACKEND_URL}/calculate_train_emission`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            miles: miles,
+            num_pessangers: people,
+          }),
+        })
+          .then((response) => {
+            console.log("Logout response received"); // Debugging log
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("train co2:", data.message);
+            co2Emission.value += Number(data.message);
+          })
+          .catch((error) => {
+            console.error("Error calculating CO2 emissions:", error);
           });
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          // Parse the JSON response
-          const result = await response.json();
-          const { message } = result;
-          totalCo2Emission += message;
-        } catch (error) {
-          console.error("Error calculating CO2 emissions:", error);
-        }
       }
-      co2Emission.value = totalCo2Emission;
       console.log("CO2:", co2Emission.value);
     };
 
@@ -422,6 +441,7 @@ export default {
       let carDist = 0;
       let busDist = 0;
       let trainDist = 0;
+      co2Emission.value = 0;
 
       // Iterate through all legs in the route
       route.legs.forEach((leg) => {
