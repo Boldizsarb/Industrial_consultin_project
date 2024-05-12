@@ -102,12 +102,22 @@
             </div>
           </div>
         </div>
-        <button
-          @click="searchRoute"
-          class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
+        <div
+          class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-2"
         >
-          Search Route
-        </button>
+          <button
+            @click="searchRoute"
+            class="w-1/2 py-2 px-4 bg-slate-800 text-white rounded hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
+          >
+            Search Route
+          </button>
+          <button
+            @click="addRoute"
+            class="w-1/2 py-2 px-4 bg-slate-800 text-white rounded hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
+          >
+            Add Route
+          </button>
+        </div>
         <div
           class="flex flex-col bg-white shadow-lg rounded-lg overflow-hidden w-full bg-gray-200 bg-opacity-50 p-4 transition-opacity duration-700 ease-in"
         >
@@ -329,6 +339,7 @@ export default {
 
     const getCo2Emission = async (selectedIndex, transport, dist) => {
       const selectedRoute = routeAlternatives.value[selectedIndex];
+      console.log(selectedRoute);
       let distance = dist;
       let people = selectedRoute.people;
       let reg = selectedRoute.reg;

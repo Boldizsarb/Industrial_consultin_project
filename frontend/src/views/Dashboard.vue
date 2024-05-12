@@ -6,6 +6,9 @@
       <section class="bg-white border-b pt-32">
         <div class="px-4 md:px-10 mx-auto w-full">
           <div>
+            <h1 class="text-3xl font-bold text-black mb-2">
+              Monthly Users Updates
+            </h1>
             <div class="flex flex-wrap">
               <div class="w-full lg:w-6/12 xl:w-3/12 px-4">
                 <div
@@ -19,17 +22,17 @@
                         <h5
                           class="text-blueGray-400 uppercase font-bold text-xs"
                         >
-                          TRAFFIC
+                          Trips
                         </h5>
                         <span class="font-semibold text-xl text-blueGray-700"
-                          >350,897</span
+                          >25</span
                         >
                       </div>
                       <div class="relative w-auto pl-4 flex-initial">
                         <div
                           class="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-red-500"
                         >
-                          <i class="far fa-chart-bar"></i>
+                          <i class="fas fa-route"></i>
                         </div>
                       </div>
                     </div>
@@ -53,7 +56,7 @@
                         <h5
                           class="text-blueGray-400 uppercase font-bold text-xs"
                         >
-                          NEW USERS
+                          CO2 Emissions
                         </h5>
                         <span class="font-semibold text-xl text-blueGray-700"
                           >2,356</span
@@ -63,14 +66,14 @@
                         <div
                           class="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-orange-500"
                         >
-                          <i class="fas fa-chart-pie"></i>
+                          <i class="fas fa-cloud"></i>
                         </div>
                       </div>
                     </div>
                     <p class="text-sm text-blueGray-400 mt-4">
                       <span class="mr-2 text-red-500"
                         ><i class="fas fa-arrow-down"></i> 3.48% </span
-                      ><span class="whitespace-nowrap">Since last week</span>
+                      ><span class="whitespace-nowrap">Since last month</span>
                     </p>
                   </div>
                 </div>
@@ -87,7 +90,7 @@
                         <h5
                           class="text-blueGray-400 uppercase font-bold text-xs"
                         >
-                          SALES
+                          Trees saved
                         </h5>
                         <span class="font-semibold text-xl text-blueGray-700"
                           >924</span
@@ -97,7 +100,7 @@
                         <div
                           class="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-pink-500"
                         >
-                          <i class="fas fa-users"></i>
+                          <i class="fas fa-tree"></i>
                         </div>
                       </div>
                     </div>
@@ -121,7 +124,7 @@
                         <h5
                           class="text-blueGray-400 uppercase font-bold text-xs"
                         >
-                          PERFORMANCE
+                          0% Co2 Trips
                         </h5>
                         <span class="font-semibold text-xl text-blueGray-700"
                           >49,65%</span
@@ -131,7 +134,7 @@
                         <div
                           class="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-emerald-500"
                         >
-                          <i class="fas fa-percent"></i>
+                          <i class="fas fa-seedling"></i>
                         </div>
                       </div>
                     </div>

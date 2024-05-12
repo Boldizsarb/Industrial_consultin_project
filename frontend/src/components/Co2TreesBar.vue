@@ -20,7 +20,8 @@
         >Keep the good work to save the world !</span
       >
       <span v-if="numberOfTrees > 0"
-        >Equivalent to planting {{ numberOfTrees }} trees!</span
+        >It will take over {{ numberOfTrees }} day/s for an average tree to
+        absorve all the co2 emitted!</span
       >
     </p>
   </div>
@@ -36,6 +37,7 @@ export default {
   },
   data() {
     return {
+      co2totree: 25000,
       treesPer20kg: 1, // Adjust the offset ratio as needed
       healthyThreshold: 100, // Healthy threshold (in kg)
       sickThreshold: 300, // Sick threshold (in kg)
@@ -43,8 +45,9 @@ export default {
   },
   computed: {
     numberOfTrees() {
+      console.log(Math.ceil(this.co2Emission / (this.co2totree / 365)));
       // Calculate the number of trees required based on CO2 emissions
-      return Math.ceil(this.co2Emission / 20) * this.treesPer20kg;
+      return Math.ceil(this.co2Emission / (this.co2totree / 365));
     },
     barWidth() {
       // Adjust the bar width proportionally to the number of trees

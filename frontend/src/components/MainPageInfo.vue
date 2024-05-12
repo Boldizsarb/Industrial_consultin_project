@@ -79,9 +79,9 @@
         ></div>
       </div>
 
-      <div class="flex flex-wrap">
+      <div class="flex flex-wrap items-center">
         <div class="w-full md:w-1/2 p-6">
-          <p class="text-gray-600 mb-8 text-center">
+          <p class="mb-8 text-center space-y-8">
             CO2 emissions are the release of carbon dioxide (CO2) gas into the
             atmosphere, which is mostly caused by human activity. Carbon dioxide
             is a naturally occurring greenhouse gas, but human activity has
@@ -225,7 +225,7 @@
           class="h-1 mx-auto gradient w-64 opacity-25 my-0 py-0 rounded-t"
         ></div>
       </div>
-      <div class="flex flex-wrap">
+      <div class="flex flex-wrap items-center">
         <div class="w-full lg:w-1/2 p-6">
           <img
             class="w-full h-full rounded-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
@@ -234,7 +234,7 @@
           />
         </div>
         <div class="w-full lg:w-1/2 p-6">
-          <p class="bold mb-8 text-center">
+          <p class="bold mb-8 text-center space-y-8">
             Reducing our environmental impact is critical to saving the world
             and combating climate change. Here are some effective strategies.
           </p>
@@ -397,6 +397,45 @@
       </g>
     </svg>
   </div>
+  <section class="bg-white py-8">
+    <div class="container max-w-5xl mx-auto m-8">
+      <h2
+        class="w-full my-2 text-5xl font-bold leading-tight text-center text-gray-800"
+      >
+        What is the role of trees ?
+      </h2>
+      <div class="w-full mb-4">
+        <div
+          class="h-1 mx-auto gradient w-64 opacity-25 my-0 py-0 rounded-t"
+        ></div>
+      </div>
+
+      <div class="flex flex-wrap items-center">
+        <div class="w-full md:w-1/2 p-6">
+          <div class="text-gray-600 mb-8 text-center space-y-8">
+            <p>
+              Through the process of photosynthesis, trees use light energy to
+              change water and carbon dioxide into sugar (in the form of
+              glucose) and oxygen. The glucose contains carbon, and this is
+              transported around the tree and used as energy to grow during
+              respiration.
+            </p>
+            <p>
+              A tree can absorb anywhere between 10 and 40kg of CO2 per year on
+              average, depending on a whole host of factors.
+            </p>
+          </div>
+        </div>
+        <div class="w-full md:w-1/2 p-6">
+          <img
+            class="w-full h-full rounded-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
+            src="@/assets/images/tree.png"
+            alt="co2 emissions"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
   <section class="bg-white border-b py-8">
     <div class="container max-w-5xl mx-auto m-8">
       <h2

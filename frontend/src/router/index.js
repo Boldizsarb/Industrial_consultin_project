@@ -23,13 +23,13 @@ const routes = [
     path: "/dashboard",
     name: "Dashboard",
     component: () => import("../views/Dashboard.vue"),
-    meta: { requiresAuth: true },
+    //meta: { requiresAuth: true },
   },
   {
     path: "/calculateEmissions",
     name: "CalculateEmissions",
     component: () => import("../views/CalculateEmissions.vue"),
-    meta: { requiresAuth: true },
+    //meta: { requiresAuth: true },
   },
   {
     path: "/userDetails",
