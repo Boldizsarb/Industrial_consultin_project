@@ -2,6 +2,7 @@ import psycopg2
 from psycopg2 import pool
 import jwt
 import datetime
+import calendar
 import logging
 import os
 from dotenv import load_dotenv
@@ -132,8 +133,7 @@ class DBPool:
                         user_id INTEGER REFERENCES "user" (id),
                         car_id INTEGER REFERENCES "car" (id),
                         distance INTEGER NOT NULL,
-                        footprint INTEGER NOT NULL
-                        
+                        footprint INTEGER NOT NULL   
                     )
                 """)
                 conn.commit()
@@ -520,3 +520,164 @@ def remove_stored_token(email):
     except Exception as e:
         print("Error removing token from storage:", e)
         return False  # Indicate failure to remove token
+    
+
+
+## new function please check
+def getUserTotalEmissions(user_id):
+    today = datetime.date.today()
+    seven_months_ago = today - datetime.timedelta(days=210)
+    with DBPool.get_instance().getconn() as conn:
+        cursor = conn.cursor()
+        query = """
+        SELECT 
+            EXTRACT(MONTH FROM date) AS month,
+            EXTRACT(YEAR FROM date) AS year,
+            SUM(emission) AS total_emission
+        FROM 
+            trips
+        WHERE 
+            user_id = %s AND
+            date >= %s
+        GROUP BY 
+            EXTRACT(MONTH FROM date),
+            EXTRACT(YEAR FROM date)
+        ORDER BY 
+            year,
+            month;
+        """
+        cursor.execute(query, (user_id, seven_months_ago))
+        results = cursor.fetchall()
+        cursor.close()
+    conn.close()
+    
+    if len(results) == 0:
+        return None, 404
+    else:
+        month_values = {}
+        for month_num, year, total_emission in results:
+            month_name = calendar.month_name[int(month_num)]
+            month_values[month_name] = total_emission
+        return month_values,200
+
+def getUserLastTrips(user_id):
+    with DBPool.get_instance().getconn() as conn:
+        cursor = conn.cursor()
+        query = '''
+        SELECT date, distance, emission
+        FROM "trips"
+        WHERE user_id = %s
+        ORDER BY date DESC
+        LIMIT 5
+        '''
+        cursor.execute(query, (user_id,))
+        trips_data = cursor.fetchall()
+        cursor.close()
+
+        if trips_data:
+            # Format the results as specified
+            user_trips = [
+                {"tripDate": str(trip[0]), "tripDist": f"{trip[1]}km", "tripCo2": f"{trip[2]}kg"}
+                for trip in trips_data
+            ]
+            return user_trips, 200
+        else:
+            return None , 404
+
+def getMonthData():
+    with DBPool.get_instance().getconn() as conn:
+        cursor = conn.cursor()
+        today = datetime.date.today()
+        this_month_start = today.replace(day=1)
+        last_month_start = (this_month_start - datetime.timedelta(days=1)).replace(day=1)
+
+        query = '''
+        SELECT
+            COUNT(*) as total_trips,
+            SUM(co2_emission) as total_co2,
+            COUNT(*) FILTER (WHERE transport IN ('walking', 'cycling')) as zero_emission_trips,
+            EXTRACT(MONTH FROM trip_date) as month
+        FROM "trips"
+        WHERE trip_date >= %s
+        GROUP BY EXTRACT(MONTH FROM trip_date)
+        '''
+        cursor.execute(query, (last_month_start, ))
+        result = cursor.fetchall()
+        cursor.close()
+        if len(result) == 0:
+            return None, 404
+        else:
+            data = {
+                'lastMonthTrips': 0,
+                'thisMonthTrips': 0,
+                'lastMonthCo2': 0,
+                'thisMonthCo2': 0,
+                'lastMonthZero': 0,
+                'thisMonthZero': 0
+            }
+
+            for row in result:
+                if row[3] == last_month_start.month:
+                    data['lastMonthTrips'] = row[0]
+                    data['lastMonthCo2'] = row[1]
+                    data['lastMonthZero'] = row[2]
+                elif row[3] == this_month_start.month:
+                    data['thisMonthTrips'] = row[0]
+                    data['thisMonthCo2'] = row[1]
+                    data['thisMonthZero'] = row[2]
+
+            return data, 200
+             
+def getUserData(user_id):
+    with DBPool.get_instance().getconn() as conn:
+        cursor = conn.cursor()
+        query = 'SELECT first_name, last_name, email, number FROM "user" WHERE user_id = %s'
+        cursor.execute(query, (user_id,))
+        user_data = cursor.fetchone()
+        cursor.close()
+        if user_data:
+            user_dict = {'firstName': user_data[0], 'lastName': user_data[1],'email': user_data[2],'number': user_data[3]}
+            return user_dict, 200
+        else:
+            return None, 404
+            
+def updateUserData(user_id,firstName,lastName,email,number):
+    try:
+        with DBPool.get_instance().getconn() as conn:
+            cursor = conn.cursor()
+            query = '''
+            UPDATE "user"
+            SET first_name = %s, last_name = %s, email = %s, number = %s
+            WHERE user_id = %s
+            '''
+            cursor.execute(query, (firstName, lastName, email, number, user_id))
+            conn.commit()
+            cursor.close()
+            if cursor.rowcount == 0:
+                return "Unable to update details", 404
+            return "Details updated", 200
+    except Exception as e:
+        return str(e), 404
+    
+def addRoute(user_id, distance,transport,duration,emission):
+    try:
+        today = datetime.date.today()
+        
+        with DBPool.get_instance().getconn() as conn:
+            cursor = conn.cursor()
+            query = '''
+            INSERT INTO "trip" (user_id, date, distance, transport, duration, emission)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            '''
+            cursor.execute(query, (user_id, today, distance, transport, duration, emission))
+            conn.commit()
+            cursor.close()
+            if cursor.rowcount == 0:
+                return "Trip could not be added", 404
+            return "Trip added successfully", 200
+    except Exception as e:
+        return str(e), 404
+     
+    
+    
+    

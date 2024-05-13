@@ -300,3 +300,112 @@ def configure_routes(app, mail):
         total_number_emition = train_api.calculate_train_emissions_standardized(miles,35) ## same, 2nd parameter is an avarage
         return jsonify({'message': total_number_emition}), 200
 
+
+    ## new routes please check
+    @app.route('/userTotalEmissions', methods=['POST'])
+    def user_total_emissions():
+        try:
+            data = request.json
+            token = data.get('token')
+
+            if not (token):
+                return jsonify({'error': 'User not found'}), 400
+
+            month_values, status_code = getUserTotalEmissions(token) 
+            
+            if status_code != 200:
+                return jsonify({'error': "error getting data"}), status_code
+
+            return jsonify({'month_values': month_values}), 200
+        except Exception as e:
+            return jsonify({'error': 'Failed to get data'}), 500
+
+    @app.route('/userTotalTrips', methods=['POST'])
+    def user_total_trips():
+        try:
+            data = request.json
+            token = data.get('token')
+
+            if not (token):
+                return jsonify({'error': 'User not found'}), 400
+
+            userTrips, status_code = getUserLastTrips(token) 
+            
+            if status_code != 200:
+                return jsonify({'error': "error getting data"}), status_code
+
+            return jsonify({'userTrips': userTrips}), 200
+        except Exception as e:
+            return jsonify({'error': 'Failed to get data'}), 500
+
+    @app.route('/monthData', methods=['POST'])
+    def month_data():
+        try:
+            monthData, status_code = getMonthData() 
+            
+            if status_code != 200:
+                return jsonify({'error': "error getting data"}), status_code
+
+            return jsonify({'monthData': monthData}), 200
+        except Exception as e:
+            return jsonify({'error': 'Failed to get data'}), 500
+        
+    @app.route('/getUserData', methods=['POST'])
+    def get_user_data():
+        try:
+            data = request.json
+            token = data.get('token')
+
+            if not (token):
+                return jsonify({'error': 'User not found'}), 400
+
+            userData, status_code = getUserData(token) 
+            
+            if status_code != 200:
+                return jsonify({'error': "error getting data"}), status_code
+
+            return jsonify({'user': userData}), 200
+        except Exception as e:
+            return jsonify({'error': 'Failed to get data'}), 500
+        
+    @app.route('/updateUserData', methods=['POST'])
+    def update_user_data():
+        try:
+            data = request.json
+            token = data.get('token')
+            firstName = data.get('firstName')
+            lastName = data.get('lastName')
+            email = data.get('email')
+            number = data.get('number')
+
+            if not (token):
+                return jsonify({'error': 'User not found'}), 400
+
+            msg, status_code = updateUserData(token,firstName,lastName,email,number) 
+            
+            if status_code != 200:
+                return jsonify({'error': "error getting data"}), status_code
+
+            return jsonify({'message': msg}), 200
+        except Exception as e:
+            return jsonify({'error': 'Failed to get data'}), 500
+    
+    @app.route('/addTrip', methods=['POST'])
+    def add_trip():
+        try:
+            data = request.json
+            token = data.get('token')
+            dist = data.get('dist')
+            transport = data.get('transport')
+            duration = data.get('duration')
+            emission = data.get('emission')
+            
+            message, status_code = addRoute(token,dist,transport,duration,emission) 
+            
+            if status_code != 200:
+                return jsonify({'message': message}), status_code
+
+            return jsonify({'success': message}), status_code
+        except Exception as e:
+            return jsonify({'error': 'Failed to get data'}), 500
+ 

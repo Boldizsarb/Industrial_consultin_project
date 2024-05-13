@@ -3,9 +3,7 @@
     <div class="tree-bar-container">
       <div class="tree-bar" :style="barStyle"></div>
     </div>
-    <p
-      class="mt-4 text-center text-xl font-semibold text-gray-800 dark:text-white"
-    >
+    <div class="mt-4 text-center text-xl font-semibold text-black">
       <span v-if="daysToAbsorbCO2 === 0"
         >That trip does not emit any CO2. Keep up the good work to save the
         world!</span
@@ -14,7 +12,7 @@
         >It will take over {{ daysToAbsorbCO2 }} day/s for an average tree to
         absorb all the CO2 emitted!</span
       >
-    </p>
+    </div>
   </div>
 </template>
 

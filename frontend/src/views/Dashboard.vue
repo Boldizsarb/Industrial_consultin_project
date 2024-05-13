@@ -24,9 +24,9 @@
                         >
                           Trips
                         </h5>
-                        <span class="font-semibold text-xl text-blueGray-700"
-                          >25</span
-                        >
+                        <span class="font-semibold text-xl text-blueGray-700">
+                          {{ this.thisMonthTrips.toFixed(0) }}
+                        </span>
                       </div>
                       <div class="relative w-auto pl-4 flex-initial">
                         <div
@@ -36,11 +36,52 @@
                         </div>
                       </div>
                     </div>
-                    <p class="text-sm text-blueGray-400 mt-4">
-                      <span class="mr-2 text-emerald-500"
-                        ><i class="fas fa-arrow-up"></i> 3.48% </span
-                      ><span class="whitespace-nowrap">Since last month</span>
-                    </p>
+                    <div class="text-sm text-blueGray-400 mt-4">
+                      <div
+                        v-if="
+                          this.getPercentage(
+                            this.lastMonthTrips,
+                            this.thisMonthTrips,
+                          ) > 0
+                        "
+                      >
+                        <span class="mr-2 text-red-500">
+                          <i class="fas fa-arrow-up"></i>
+                          {{
+                            Math.abs(
+                              this.getPercentage(
+                                this.lastMonthTrips,
+                                this.thisMonthTrips,
+                              ),
+                            ).toFixed(2)
+                          }}
+                          %
+                        </span>
+                        <span class="whitespace-nowrap">Since last month</span>
+                      </div>
+                      <div
+                        v-else-if="
+                          this.getPercentage(
+                            this.lastMonthTrips,
+                            this.thisMonthTrips,
+                          ) <= 0
+                        "
+                      >
+                        <span class="mr-2 text-emerald-500">
+                          <i class="fas fa-arrow-down"></i>
+                          {{
+                            Math.abs(
+                              getPercentage(
+                                this.lastMonthTrips,
+                                this.thisMonthTrips,
+                              ),
+                            ).toFixed(2)
+                          }}
+                          %
+                        </span>
+                        <span class="whitespace-nowrap">Since last month</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -58,9 +99,9 @@
                         >
                           CO2 Emissions
                         </h5>
-                        <span class="font-semibold text-xl text-blueGray-700"
-                          >2,356</span
-                        >
+                        <span class="font-semibold text-xl text-blueGray-700">
+                          {{ this.thisMonthCo2.toFixed(0) }}
+                        </span>
                       </div>
                       <div class="relative w-auto pl-4 flex-initial">
                         <div
@@ -70,11 +111,52 @@
                         </div>
                       </div>
                     </div>
-                    <p class="text-sm text-blueGray-400 mt-4">
-                      <span class="mr-2 text-red-500"
-                        ><i class="fas fa-arrow-down"></i> 3.48% </span
-                      ><span class="whitespace-nowrap">Since last month</span>
-                    </p>
+                    <div class="text-sm text-blueGray-400 mt-4">
+                      <div
+                        v-if="
+                          this.getPercentage(
+                            this.lastMonthCo2,
+                            this.thisMonthCo2,
+                          ) < 0
+                        "
+                      >
+                        <span class="mr-2 text-red-500">
+                          <i class="fas fa-arrow-up"></i>
+                          {{
+                            Math.abs(
+                              this.getPercentage(
+                                this.lastMonthCo2,
+                                this.thisMonthCo2,
+                              ),
+                            ).toFixed(2)
+                          }}
+                          %
+                        </span>
+                        <span class="whitespace-nowrap">Since last month</span>
+                      </div>
+                      <div
+                        v-else-if="
+                          this.getPercentage(
+                            this.lastMonthCo2,
+                            this.thisMonthCo2,
+                          ) >= 0
+                        "
+                      >
+                        <span class="mr-2 text-emerald-500">
+                          <i class="fas fa-arrow-down"></i>
+                          {{
+                            Math.abs(
+                              this.getPercentage(
+                                this.lastMonthCo2,
+                                this.thisMonthCo2,
+                              ),
+                            ).toFixed(2)
+                          }}
+                          %
+                        </span>
+                        <span class="whitespace-nowrap">Since last month</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -92,9 +174,9 @@
                         >
                           Trees saved
                         </h5>
-                        <span class="font-semibold text-xl text-blueGray-700"
-                          >924</span
-                        >
+                        <span class="font-semibold text-xl text-blueGray-700">
+                          {{ this.thisMonthTrees.toFixed(0) }}
+                        </span>
                       </div>
                       <div class="relative w-auto pl-4 flex-initial">
                         <div
@@ -104,11 +186,52 @@
                         </div>
                       </div>
                     </div>
-                    <p class="text-sm text-blueGray-400 mt-4">
-                      <span class="mr-2 text-orange-500"
-                        ><i class="fas fa-arrow-down"></i> 1.10% </span
-                      ><span class="whitespace-nowrap">Since yesterday</span>
-                    </p>
+                    <div class="text-sm text-blueGray-400 mt-4">
+                      <div
+                        v-if="
+                          this.getPercentage(
+                            this.lastMonthTrees,
+                            this.thisMonthTrees,
+                          ) <= 0
+                        "
+                      >
+                        <span class="mr-2 text-emerald-500">
+                          <i class="fas fa-arrow-up"></i>
+                          {{
+                            Math.abs(
+                              this.getPercentage(
+                                this.lastMonthTrees,
+                                this.thisMonthTrees,
+                              ),
+                            ).toFixed(2)
+                          }}
+                          %
+                        </span>
+                        <span class="whitespace-nowrap">Since last month</span>
+                      </div>
+                      <div
+                        v-else-if="
+                          this.getPercentage(
+                            this.lastMonthTrees,
+                            this.thisMonthTrees,
+                          ) > 0
+                        "
+                      >
+                        <span class="mr-2 text-red-500">
+                          <i class="fas fa-arrow-down"></i>
+                          {{
+                            Math.abs(
+                              this.getPercentage(
+                                this.lastMonthTrees,
+                                this.thisMonthTrees,
+                              ),
+                            ).toFixed(2)
+                          }}
+                          %
+                        </span>
+                        <span class="whitespace-nowrap">Since last month</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -126,8 +249,8 @@
                         >
                           0% Co2 Trips
                         </h5>
-                        <span class="font-semibold text-xl text-blueGray-700"
-                          >49,65%</span
+                        <span class="font-semibold text-xl text-blueGray-700">
+                          {{ this.thisMonthZero.toFixed(0) }}</span
                         >
                       </div>
                       <div class="relative w-auto pl-4 flex-initial">
@@ -138,11 +261,52 @@
                         </div>
                       </div>
                     </div>
-                    <p class="text-sm text-blueGray-400 mt-4">
-                      <span class="mr-2 text-emerald-500"
-                        ><i class="fas fa-arrow-up"></i> 12% </span
-                      ><span class="whitespace-nowrap">Since last month</span>
-                    </p>
+                    <div class="text-sm text-blueGray-400 mt-4">
+                      <div
+                        v-if="
+                          this.getPercentage(
+                            this.lastMonthZero,
+                            this.thisMonthZero,
+                          ) <= 0
+                        "
+                      >
+                        <span class="mr-2 text-emerald-500">
+                          <i class="fas fa-arrow-up"></i>
+                          {{
+                            Math.abs(
+                              this.getPercentage(
+                                this.lastMonthZero,
+                                this.thisMonthZero,
+                              ),
+                            ).toFixed(2)
+                          }}
+                          %
+                        </span>
+                        <span class="whitespace-nowrap">Since last month</span>
+                      </div>
+                      <div
+                        v-else-if="
+                          this.getPercentage(
+                            this.lastMonthZero,
+                            this.thisMonthZero,
+                          ) > 0
+                        "
+                      >
+                        <span class="mr-2 text-red-500">
+                          <i class="fas fa-arrow-down"></i>
+                          {{
+                            Math.abs(
+                              this.getPercentage(
+                                this.lastMonthZero,
+                                this.thisMonthZero,
+                              ),
+                            ).toFixed(2)
+                          }}
+                          %
+                        </span>
+                        <span class="whitespace-nowrap">Since last month</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -204,34 +368,32 @@
                 <div class="rounded-t mb-0 px-4 py-3 bg-transparent">
                   <div class="flex flex-wrap items-center">
                     <div class="relative w-full max-w-full flex-grow flex-1">
-                      <h6
-                        class="uppercase text-blueGray-400 mb-1 text-xs font-semibold"
-                      >
-                        Performance
-                      </h6>
-                      <h2 class="text-blueGray-700 text-xl font-semibold">
-                        Total orders
-                      </h2>
-                    </div>
-                  </div>
-                </div>
-                <div class="p-4 flex-auto">
-                  <div class="relative h-350-px">
-                    <div class="chartjs-size-monitor">
-                      <div class="chartjs-size-monitor-expand">
-                        <div class=""></div>
+                      <div class="w-full p-4">
+                        <h2 class="text-2xl font-bold text-gray-700 mb-4">
+                          Last Trips Details
+                        </h2>
+                        <table class="table-auto w-full">
+                          <thead>
+                            <tr class="bg-green-800 text-white">
+                              <th class="px-4 py-2">Date</th>
+                              <th class="px-4 py-2">Distance</th>
+                              <th class="px-4 py-2">CO2 Emitted</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr
+                              v-for="(trip, index) in userTrips"
+                              :key="index"
+                              class="bg-white border-b"
+                            >
+                              <td class="px-4 py-2">{{ trip.tripDate }}</td>
+                              <td class="px-4 py-2">{{ trip.tripDist }}</td>
+                              <td class="px-4 py-2">{{ trip.tripCo2 }}</td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
-                      <div class="chartjs-size-monitor-shrink">
-                        <div class=""></div>
-                      </div>
                     </div>
-                    <canvas
-                      id="bar-chart"
-                      style="display: block; width: 67px; height: 350px"
-                      width="67"
-                      height="350"
-                      class="chartjs-render-monitor"
-                    ></canvas>
                   </div>
                 </div>
               </div>
@@ -259,28 +421,65 @@ export default {
   data() {
     return {
       isAnimated: false,
-      user_id: null,
-      monthValues: {
-        January: 10,
-        February: 25,
-        March: 55,
-        April: 40,
-        May: 30,
-        June: 55,
-        Jully: 40,
-        August: 30,
-      },
+      lastMonthTrips: 0,
+      thisMonthTrips: 0,
+      lastMonthCo2: 0,
+      thisMonthCo2: 0,
+      lastMonthTrees: 0,
+      thisMonthTrees: 0,
+      lastMonthZero: 0,
+      thisMonthZero: 0,
+      userTrips: [],
+      monthValues: {},
     };
   },
   methods: {
-    getCo2Emmissions() {
+    getCookie(name) {
+      let cookieArray = document.cookie.split(";");
+      for (let i = 0; i < cookieArray.length; i++) {
+        let cookiePair = cookieArray[i].split("=");
+        if (name === cookiePair[0].trim()) {
+          return decodeURIComponent(cookiePair[1]);
+        }
+      }
+      return null;
+    },
+    getUserCo2Emmissions() {
+      const token = this.getCookie("token");
       fetch(`${process.env.VUE_APP_BACKEND_URL}/userTotalEmissions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: this.user_id,
+          token: token,
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.message) {
+            alert(data.message);
+          }
+          this.monthValues = data.month_values;
+        })
+        .catch((error) => {
+          console.error("There was a problem adding the trip:", error);
+        });
+    },
+    getUserTrips() {
+      const token = this.getCookie("token");
+      fetch(`${process.env.VUE_APP_BACKEND_URL}/userTotalTrips`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: token,
         }),
       })
         .then((response) => {
@@ -293,17 +492,64 @@ export default {
           if (data.message) {
             alert(data.message); // This will show the message from your Flask API as an alert
           }
-          this.monthValues = data.month_values;
+          this.userTrips = data.userTrips;
         })
         .catch((error) => {
           console.error("There was a problem adding the trip:", error);
         });
+    },
+    getMonthData() {
+      fetch(`${process.env.VUE_APP_BACKEND_URL}/monthData`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.message) {
+            alert(data.message);
+          }
+          this.lastMonthTrips = data.monthData.lastMonthTrips;
+          this.thisMonthTrips = data.monthData.thisMonthTrips;
+          this.lastMonthCo2 = data.monthData.lastMonthCo2;
+          this.thisMonthCo2 = data.monthData.thisMonthCo2;
+          this.lastMonthZero = data.monthData.lastMonthZero;
+          this.thisMonthZero = data.monthData.thisMonthZero;
+        })
+        .catch((error) => {
+          console.error("There was a problem adding the trip:", error);
+        });
+    },
+    getMonthTrees() {
+      const monthlyTree = Math.ceil(25000 / 12);
+      this.lastMonthTrees = this.lastMonthCo2 / monthlyTree;
+      this.thisMonthTrees = this.thisMonthCo2 / monthlyTree;
+    },
+    getInicialData() {
+      this.getUserCo2Emmissions, this.getUserTrips, this.getMonthData;
+      this.getMonthTrees;
+    },
+    getPercentage(num1, num2) {
+      if (num1 === 0 && num2 === 0) {
+        return 0;
+      }
+      const dif = num1 - num2;
+      const perc = (dif * 100) / num1;
+      console.log(perc);
+      return perc;
     },
   },
   mounted() {
     setTimeout(() => {
       this.isAnimated = true;
     }, 100);
+    this.getInicialData();
   },
 };
 </script>

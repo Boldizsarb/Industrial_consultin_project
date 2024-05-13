@@ -15,11 +15,11 @@
       <div
         class="w-full m-8 lg:w-1/2 space-y-4 lg:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200"
       >
-        <h1 class="text-3xl font-bold text-white mb-2">Calculate Emissions</h1>
+        <h1 class="text-3xl font-bold text-black mb-2">Calculate Emissions</h1>
         <div>
           <Co2TreesBar :co2Emission="co2Emission" />
         </div>
-        <p class="text-lg text-white mb-4">
+        <p class="text-lg text-black mb-4">
           Here you will be able to see various information regarding your
           emission history.
         </p>
@@ -169,7 +169,8 @@ export default {
     };
   },
   setup() {
-    let co2Emission = ref(13000);
+    let co2Emission = ref(0);
+    let transport = ref([]);
     const map = ref(null);
     const travelMode = ref("DRIVING");
     const directionsService = new google.maps.DirectionsService();
@@ -221,12 +222,12 @@ export default {
         }
       });
     });
-
     const searchRoute = () => {
       const origin = document.getElementById("origin-input").value;
       const destination = document.getElementById("destination-input").value;
       let people = 1;
       let reg = "";
+      transport = [];
       if (!origin.trim()) {
         alert("Origin field cannot be empty.");
         return;
@@ -281,6 +282,7 @@ export default {
               duration: route.legs[0].duration.text,
               people: people,
               reg: reg,
+              transport: transport,
             }));
             selectedRouteIndex.value = 0;
           } else {
@@ -309,14 +311,14 @@ export default {
       };
 
       // Start the trip for the selected route
-      startTrip(selectedIndex);
+      startTrip();
     };
-
-    const startTrip = (selectedIndex) => {
-      const selectedRoute = lastResponse.value.routes[selectedIndex];
+    const startTrip = () => {
+      transport.value = [];
+      const selectedRoute = lastResponse.value.routes[selectedRouteIndex.value];
       const startLocation = selectedRoute.legs[0].start_location;
       const endLocation = selectedRoute.legs[0].end_location;
-      processTransitDetails(selectedRoute, selectedIndex);
+      processTransitDetails(selectedRoute, selectedRouteIndex.value);
       // Clear existing routes from the map before setting the new one
       directionsDisplayers.value.forEach((displayer) => displayer.setMap(null));
       directionsDisplayers.value = [];
@@ -324,7 +326,7 @@ export default {
       const directionsRenderer = new google.maps.DirectionsRenderer({
         map: map.value,
         directions: lastResponse.value,
-        routeIndex: selectedIndex,
+        routeIndex: selectedRouteIndex.value,
         polylineOptions: {
           strokeColor: "blue",
         },
@@ -338,21 +340,19 @@ export default {
       bounds.extend(endLocation);
       map.value.fitBounds(bounds);
     };
-
-    const getCo2Emission = (selectedIndex, transport, dist) => {
-      const token = this.getCookie("token");
+    const getCo2Emission = (transport, dist) => {
+      const token = getCookie("token");
       if (!token) {
         console.error("No token found.");
         this.$router.push("/");
         return;
       }
-      const selectedRoute = routeAlternatives.value[selectedIndex];
+      const selectedRoute = routeAlternatives.value[selectedRouteIndex.value];
       console.log(selectedRoute);
       let distance = dist;
       let people = selectedRoute.people;
       let reg = selectedRoute.reg;
       const miles = distance * 0.621371;
-      console.log("CO2:", co2Emission.value);
       if (transport === "DRIVING") {
         fetch(`${process.env.VUE_APP_BACKEND_URL}/calculate_emission`, {
           method: "POST",
@@ -374,7 +374,6 @@ export default {
             return response.json();
           })
           .then((data) => {
-            console.log("car co2:", data.total_emmission_in_miles);
             co2Emission.value += data.total_emmission_in_miles;
           })
           .catch((error) => {
@@ -400,7 +399,6 @@ export default {
             return response.json();
           })
           .then((data) => {
-            console.log("bus co2:", data.message);
             co2Emission.value += Number(data.message);
           })
           .catch((error) => {
@@ -426,21 +424,20 @@ export default {
             return response.json();
           })
           .then((data) => {
-            console.log("train co2:", data.message);
             co2Emission.value += Number(data.message);
           })
           .catch((error) => {
             console.error("Error calculating CO2 emissions:", error);
           });
       }
-      console.log("CO2:", co2Emission.value);
     };
-
-    const processTransitDetails = (route, selectedIndex) => {
+    const processTransitDetails = (route) => {
       // Initialize all distance variables to 0
       let carDist = 0;
       let busDist = 0;
       let trainDist = 0;
+      let walkDist = 0;
+      let cyclingDist = 0;
       co2Emission.value = 0;
 
       // Iterate through all legs in the route
@@ -461,22 +458,81 @@ export default {
             let distance = step.distance.value || "Unknown distance";
             if (step.travel_mode === "DRIVING") {
               carDist += distance;
+            } else if (step.travel_mode === "WALKING") {
+              walkDist += distance;
+            } else if (step.travel_mode === "BICYCLING") {
+              cyclingDist += distance;
             }
           }
         });
       });
       if (carDist > 0) {
-        getCo2Emission(selectedIndex, "DRIVING", carDist * 0.001);
+        getCo2Emission("DRIVING", carDist * 0.001);
+        transport.value.push("car");
       } else if (busDist > 0) {
-        getCo2Emission(selectedIndex, "BUS", busDist * 0.001);
+        getCo2Emission("BUS", busDist * 0.001);
+        transport.value.push("bus");
       } else if (trainDist > 0) {
-        getCo2Emission(selectedIndex, "TRAIN", trainDist * 0.001);
+        getCo2Emission("TRAIN", trainDist * 0.001);
+        transport.value.push("train");
+      } else if (walkDist > 0) {
+        transport.value.push("walk");
+      } else if (cyclingDist > 0) {
+        transport.value.push("cycling");
       }
+    };
+    const getCookie = (name) => {
+      let cookieArray = document.cookie.split(";");
+      for (let i = 0; i < cookieArray.length; i++) {
+        let cookiePair = cookieArray[i].split("=");
+        if (name === cookiePair[0].trim()) {
+          return decodeURIComponent(cookiePair[1]);
+        }
+      }
+      return null;
+    };
+    const addRoute = () => {
+      const token = getCookie("token");
+      const selectedRoute = routeAlternatives.value[selectedRouteIndex.value];
+      const dist = parseFloat(selectedRoute.distance);
+      const transport = selectedRoute.transport;
+      const duration = selectedRoute.duration;
+      console.log("route", selectedRoute);
+      console.log("distance", dist);
+      fetch(`${process.env.VUE_APP_BACKEND_URL}/addTrip`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: token,
+          dist: dist,
+          transport: transport.value,
+          duration: duration,
+          emission: co2Emission.value,
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.message) {
+            alert(data.message);
+          }
+          this.$router.push("/dashboard");
+        })
+        .catch((error) => {
+          console.error("There was a problem adding the trip:", error);
+        });
     };
 
     return {
       searchRoute,
       selectRoute,
+      addRoute,
       travelMode,
       routeAlternatives,
       selectedRouteDetails,

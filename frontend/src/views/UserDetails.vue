@@ -159,11 +159,10 @@ export default {
     return {
       isAnimated: false,
       editingUser: false,
-      firstName: "Renato",
-      lastName: "Cardoso",
-      email: "test@tes.com",
-      number: "07576623584",
-      co2: "1325",
+      firstName: "",
+      lastName: "",
+      email: "",
+      number: "",
       newFirstName: "",
       newLastName: "",
       newEmail: "",
@@ -187,14 +186,16 @@ export default {
     },
     saveDetails() {
       console.log("user updated");
+      const token = this.getCookie("token");
       fetch(`${process.env.VUE_APP_BACKEND_URL}/updateUser`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: this.user_id,
-          name: this.newFullName,
+          token: token,
+          firstName: this.newfirstName,
+          lastName: this.newLastName,
           email: this.newEmail,
           number: this.newNumber,
         }),
@@ -206,10 +207,41 @@ export default {
           return response.json();
         })
         .then((data) => {
-          if (data.message) {
-            alert(data.message); // This will show the message from your Flask API as an alert
+          if (data.error) {
+            alert(data.error);
           }
-          this.monthValues = data.month_values;
+          this.cancelEdit();
+          this.getUserData();
+        })
+        .catch((error) => {
+          console.error("There was a problem adding the trip:", error);
+        });
+    },
+    getUserData() {
+      const token = this.getCookie("token");
+      fetch(`${process.env.VUE_APP_BACKEND_URL}/getUserData`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: token,
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.error) {
+            alert(data.error); // This will show the message from your Flask API as an alert
+          }
+          this.firstName = data.user.firstName;
+          this.lastName = data.user.lastName;
+          this.email = data.user.email;
+          this.number = data.user.number;
         })
         .catch((error) => {
           console.error("There was a problem adding the trip:", error);
@@ -220,6 +252,7 @@ export default {
     setTimeout(() => {
       this.isAnimated = true;
     }, 100);
+    this.getUserData();
   },
 };
 </script>
