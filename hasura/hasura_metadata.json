@@ -1,0 +1,79 @@
+{
+  "resource_version": 5,
+  "metadata": {
+    "version": 3,
+    "sources": [
+      {
+        "name": "default",
+        "kind": "postgres",
+        "tables": [
+          {
+            "table": {
+              "name": "car",
+              "schema": "public"
+            }
+          },
+          {
+            "table": {
+              "name": "password_reset_tokens",
+              "schema": "public"
+            }
+          },
+          {
+            "table": {
+              "name": "public_transport",
+              "schema": "public"
+            }
+          },
+          {
+            "table": {
+              "name": "trip",
+              "schema": "public"
+            }
+          },
+          {
+            "table": {
+              "name": "user",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "cars",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "user_id",
+                    "table": {
+                      "name": "car",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "user_total_trip_emissions",
+              "schema": "public"
+            }
+          }
+        ],
+        "configuration": {
+          "connection_info": {
+            "database_url": {
+              "from_env": "HASURA_GRAPHQL_DATABASE_URL"
+            },
+            "isolation_level": "read-committed",
+            "pool_settings": {
+              "connection_lifetime": 600,
+              "idle_timeout": 180,
+              "max_connections": 50,
+              "retries": 1
+            },
+            "use_prepared_statements": true
+          }
+        }
+      }
+    ]
+  }
+}

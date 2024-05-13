@@ -99,9 +99,8 @@ class DBPool:
                 cur.execute("""
                     CREATE TABLE "car" (
                         id SERIAL PRIMARY KEY,
-                        user_id INTEGER NOT NULL,
-                        reg VARCHAR(255) NOT NULL,
-                        FOREIGN KEY (user_id) REFERENCES "user"(id)
+                        user_id INTEGER REFERENCES "user" (id),
+                        reg VARCHAR(255) NOT NULL
                     )
                 """)
                 conn.commit()
@@ -130,12 +129,11 @@ class DBPool:
                 cur.execute("""
                     CREATE TABLE "trip" (
                         id SERIAL PRIMARY KEY,
-                        user_id INTEGER NOT NULL,
+                        user_id INTEGER REFERENCES "user" (id),
+                        car_id INTEGER REFERENCES "car" (id),
                         distance INTEGER NOT NULL,
-                        footprint INTEGER NOT NULL,
-                        car_id INTEGER NOT NULL,
-                        FOREIGN KEY (user_id) REFERENCES "user"(id),
-                        FOREIGN KEY (car_id) REFERENCES "car"(id)
+                        footprint INTEGER NOT NULL
+                        
                     )
                 """)
                 conn.commit()
@@ -164,6 +162,7 @@ class DBPool:
                 cur.execute("""
                     CREATE TABLE "public_transport" (
                         id SERIAL PRIMARY KEY,
+                        user_id INTEGER REFERENCES "user" (id),
                         type VARCHAR(255),
                         footprint INTEGER NOT NULL
                     )

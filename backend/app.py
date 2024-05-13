@@ -50,6 +50,9 @@ def send_verification_email():
 with app.app_context():
     DBPool.create_table_user_if_not_exists()
     DBPool.create_table_password_reset_tokens_if_not_exists()
+    DBPool.create_table_car_if_not_exists()
+    DBPool.create_table_trip_if_not_exists()
+    DBPool.create_table_public_transport_if_not_exists()
 
 
 @app.route('/users', methods=['GET'])

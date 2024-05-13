@@ -46,6 +46,9 @@ services:
   
   hasura:
     container_name: industrial-consulting-hasura
+    build:
+      context: ./hasura
+      dockerfile: Dockerfile
     image: hasura/graphql-engine:v2.38.0
     ports:
       - "8080:8080"
@@ -55,8 +58,12 @@ services:
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgres@postgresql:5432/industrial_consulting
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_ADMIN_SECRET: "postegres"
-    restart: always
+    entrypoint: ["sh", "-c", "chmod +x /hasura-entrypoint.sh && /hasura-entrypoint.sh"]
 
+    restart: always
+    volumes:
+      - ./hasura/hasura-entrypoint.sh:/hasura-entrypoint.sh
+      - ./hasura/hasura_metadata.json:/hasura_metadata.json
 
 volumes: 
   data:
