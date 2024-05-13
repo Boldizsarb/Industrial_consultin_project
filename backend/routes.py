@@ -150,6 +150,7 @@ def configure_routes(app, mail):
             return jsonify({'status': 'missing'})
 
 
+
     @app.route('/logout', methods=['POST'])
     def logout():
         try:

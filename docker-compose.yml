@@ -12,6 +12,7 @@ services:
     volumes:
       - data:/var/lib/postgresql/data
 
+
   flask:
     container_name: industrial-consulting-flask
     build: 
@@ -34,6 +35,7 @@ services:
     volumes:
       - ./backend:/app
   
+
   vuejs:
     container_name: industrial-consulting-vuejs
     build: 
@@ -44,6 +46,7 @@ services:
     depends_on:
       - flask
   
+
   hasura:
     container_name: industrial-consulting-hasura
     build:
@@ -58,12 +61,11 @@ services:
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgres@postgresql:5432/industrial_consulting
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_ADMIN_SECRET: "postegres"
-    entrypoint: ["sh", "-c", "chmod +x /hasura-entrypoint.sh && /hasura-entrypoint.sh"]
-
+    entrypoint: ["/bin/sh", "-c", "chmod +x /hasura/hasura-entrypoint.sh && /hasura/hasura-entrypoint.sh"]
     restart: always
     volumes:
-      - ./hasura/hasura-entrypoint.sh:/hasura-entrypoint.sh
-      - ./hasura/hasura_metadata.json:/hasura_metadata.json
+      - ./hasura:/hasura
+
 
 volumes: 
   data:
