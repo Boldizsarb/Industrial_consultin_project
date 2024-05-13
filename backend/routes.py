@@ -307,11 +307,14 @@ def configure_routes(app, mail):
         try:
             data = request.json
             token = data.get('token')
+            decoded_token = jwt.decode(token, JWT_SECRETS, algorithms=['HS256'])
+            email = decoded_token.get('email')
+            user_id = getUserID(email)
 
-            if not (token):
-                return jsonify({'error': 'User not found'}), 400
+            if not (user_id):
+                return jsonify({'error': 'User not found'}), 404
 
-            month_values, status_code = getUserTotalEmissions(token) 
+            month_values, status_code = getUserTotalEmissions(user_id) 
             
             if status_code != 200:
                 return jsonify({'error': "error getting data"}), status_code
@@ -325,11 +328,14 @@ def configure_routes(app, mail):
         try:
             data = request.json
             token = data.get('token')
+            decoded_token = jwt.decode(token, JWT_SECRETS, algorithms=['HS256'])
+            email = decoded_token.get('email')
+            user_id = getUserID(email)
 
-            if not (token):
-                return jsonify({'error': 'User not found'}), 400
+            if not (user_id):
+                return jsonify({'error': 'User not found'}), 404
 
-            userTrips, status_code = getUserLastTrips(token) 
+            userTrips, status_code = getUserLastTrips(user_id) 
             
             if status_code != 200:
                 return jsonify({'error': "error getting data"}), status_code
@@ -355,11 +361,14 @@ def configure_routes(app, mail):
         try:
             data = request.json
             token = data.get('token')
+            decoded_token = jwt.decode(token, JWT_SECRETS, algorithms=['HS256'])
+            email = decoded_token.get('email')
+            user_id = getUserID(email)            
 
-            if not (token):
-                return jsonify({'error': 'User not found'}), 400
+            if not (user_id):
+                return jsonify({'error': 'User not found'}), 404
 
-            userData, status_code = getUserData(token) 
+            userData, status_code = getUserData(user_id) 
             
             if status_code != 200:
                 return jsonify({'error': "error getting data"}), status_code
@@ -377,11 +386,14 @@ def configure_routes(app, mail):
             lastName = data.get('lastName')
             email = data.get('email')
             number = data.get('number')
+            decoded_token = jwt.decode(token, JWT_SECRETS, algorithms=['HS256'])
+            email = decoded_token.get('email')
+            user_id = getUserID(email)  
 
-            if not (token):
-                return jsonify({'error': 'User not found'}), 400
+            if not (user_id):
+                return jsonify({'error': 'User not found'}), 404
 
-            msg, status_code = updateUserData(token,firstName,lastName,email,number) 
+            msg, status_code = updateUserData(user_id,firstName,lastName,email,number) 
             
             if status_code != 200:
                 return jsonify({'error': "error getting data"}), status_code
@@ -399,8 +411,13 @@ def configure_routes(app, mail):
             transport = data.get('transport')
             duration = data.get('duration')
             emission = data.get('emission')
+            decoded_token = jwt.decode(token, JWT_SECRETS, algorithms=['HS256'])
+            email = decoded_token.get('email')
+            user_id = getUserID(email) 
+            if not (user_id):
+                return jsonify({'error': 'User not found'}), 404 
             
-            message, status_code = addRoute(token,dist,transport,duration,emission) 
+            message, status_code = addRoute(user_id,dist,transport,duration,emission) 
             
             if status_code != 200:
                 return jsonify({'message': message}), status_code

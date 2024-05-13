@@ -131,9 +131,11 @@ class DBPool:
                     CREATE TABLE "trip" (
                         id SERIAL PRIMARY KEY,
                         user_id INTEGER REFERENCES "user" (id),
-                        car_id INTEGER REFERENCES "car" (id),
                         distance INTEGER NOT NULL,
-                        footprint INTEGER NOT NULL   
+                        duration VARCHAR(255) NOT NULL,
+                        transport TEXT NOT NULL,
+                        emission DOUBLE PRECISION NOT NULL,
+                        date DATE NOT NULL
                     )
                 """)
                 conn.commit()
@@ -524,6 +526,19 @@ def remove_stored_token(email):
 
 
 ## new function please check
+def getUserID(email):
+    with DBPool.get_instance().getconn() as conn:
+        cursor = conn.cursor()
+        query = 'SELECT id FROM "user" WHERE email = %s'
+        cursor.execute(query, (email,))
+        data = cursor.fetchone()
+        cursor.close()
+        
+        if data:
+            return data, 200
+        else:
+            return None, 404
+    
 def getUserTotalEmissions(user_id):
     today = datetime.date.today()
     seven_months_ago = today - datetime.timedelta(days=210)
@@ -535,7 +550,7 @@ def getUserTotalEmissions(user_id):
             EXTRACT(YEAR FROM date) AS year,
             SUM(emission) AS total_emission
         FROM 
-            trips
+            trip
         WHERE 
             user_id = %s AND
             date >= %s
@@ -565,7 +580,7 @@ def getUserLastTrips(user_id):
         cursor = conn.cursor()
         query = '''
         SELECT date, distance, emission
-        FROM "trips"
+        FROM "trip"
         WHERE user_id = %s
         ORDER BY date DESC
         LIMIT 5
@@ -597,7 +612,7 @@ def getMonthData():
             SUM(co2_emission) as total_co2,
             COUNT(*) FILTER (WHERE transport IN ('walking', 'cycling')) as zero_emission_trips,
             EXTRACT(MONTH FROM trip_date) as month
-        FROM "trips"
+        FROM "trip"
         WHERE trip_date >= %s
         GROUP BY EXTRACT(MONTH FROM trip_date)
         '''
