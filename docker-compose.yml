@@ -46,9 +46,13 @@ services:
     depends_on:
       - flask
   
+
   hasura:
     container_name: industrial-consulting-hasura
-    image: hasura/graphql-engine:v2.38.0.cli-migrations-v3
+    build:
+      context: ./hasura
+      dockerfile: Dockerfile
+    image: hasura/graphql-engine:v2.38.0.cli-migrations
     ports:
       - "8080:8080"
     depends_on:
@@ -57,10 +61,10 @@ services:
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgres@postgresql:5432/industrial_consulting
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
       HASURA_GRAPHQL_ADMIN_SECRET: "postegres"
-    restart: always
     volumes:
-      - ./hasura/metadata:/metadata
-    command: ["graphql-engine", "serve", "--enable-console"]
-
-volumes:  
+      - ./hasura/hasura_metadata.json:/hasura-metadata.json
+    entrypoint: ["/bin/bash", "-c", "/hasura-entrypoint.sh"]
+    
+  
+volumes: 
   data:
