@@ -1,33 +1,40 @@
 #!/bin/bash
 
-# Wait for the database service to be ready
-echo "Waiting for the database to be ready..."
-if ! nc -z industrial-consulting-postgresql 5432; then
-    echo "Database is not ready. Waiting..."
-    sleep 5
-fi
-echo "Database is ready."
+# Wait for PostgreSQL to start
+until nc -z industrial-consulting-postgresql 5432; do
+  echo "Waiting for PostgreSQL to start..."
+  sleep 1
+done
 
-echo "Checking if Hasura is ready..."
-if ! nc -z industrial-consulting-hasura 8080; then
-    echo "Hasura is not ready. Waiting..."
-    sleep 5
-fi
-echo "Hasura is ready."
+# Start Hasura GraphQL engine in the background
+graphql-engine serve --enable-console &
 
-echo "Checking if Hasura is fully operational..."
-if ! curl --output /dev/null --silent --head --fail http://industrial-consulting-hasura:8080/healthz; then
-    echo "Hasura is not fully operational. Waiting..."
-    sleep 5
-fi
-echo "Hasura is fully operational."
+# Wait for Hasura to start
+sleep 10
 
-# Apply metadata
+# Initialize Hasura project directory
+hasura init --directory /hasura-project
+
+# Change to the Hasura project directory
+cd /hasura-project
+
+# Print current directory and list files (for debugging)
+echo "Current directory: $(pwd)"
+echo "Files in the directory: $(ls)"
+
+# Export Hasura metadata
+echo "Exporting Hasura metadata..."
+hasura metadata export
+
+# Apply Hasura metadata changes
 echo "Applying Hasura metadata..."
-mkdir -p /hasura-metadata
-cp /hasura_metadata.json /hasura-metadata/
-hasura metadata apply --endpoint http://industrial-consulting-hasura:8080 --admin-secret postegres --metadata-dir /hasura-metadata --log-level debug
+hasura metadata apply
 
-# Start the Hasura GraphQL engine
-echo "Starting Hasura GraphQL engine..."
-graphql-engine serve
+echo "Hasura metadata updated successfully"
+echo "Current directory: $(pwd)"
+echo "Files in the directory: $(ls)"
+cd ..
+cp -R /hasura-project/. /hasura
+
+# Wait for Hasura GraphQL engine to exit
+wait
