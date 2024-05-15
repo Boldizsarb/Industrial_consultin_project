@@ -1,6 +1,6 @@
 <template>
   <div class="chart-container">
-    <Bar id="my-chart-id" :options="chartOptions" :data="chartData" />
+    <Bar ref="myChart" :options="chartOptions" :data="chartData" />
   </div>
 </template>
 
@@ -29,7 +29,6 @@ export default {
   name: "BarChart",
   components: { Bar },
   props: {
-    // Prop to receive the month-value pairs
     monthValues: {
       type: Object,
       required: true,
@@ -99,7 +98,6 @@ export default {
     };
   },
   watch: {
-    // Watch for changes in the input data and update the chart accordingly
     monthValues: {
       immediate: true,
       handler(newData) {
@@ -108,8 +106,9 @@ export default {
     },
   },
   methods: {
-    // Function to transform the input data into chart data
     updateChartData(data) {
+      if (!data) return; // Check for null or undefined data
+
       // Ensure valid entries and remove undefined/null values
       const validEntries = Object.entries(data).filter(
         ([key, value]) => key && value !== null && value !== undefined,
@@ -122,6 +121,11 @@ export default {
       // Update the labels and data for the chart
       this.chartData.labels = labels;
       this.chartData.datasets[0].data = values;
+
+      // Trigger chart update
+      if (this.$refs.myChart) {
+        this.$refs.myChart.update();
+      }
     },
   },
 };

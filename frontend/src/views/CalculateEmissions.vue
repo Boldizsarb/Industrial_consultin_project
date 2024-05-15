@@ -153,6 +153,7 @@
 /* global google */
 import { onMounted, ref, watch } from "vue";
 import navbar from "@/components/NavBar.vue";
+import { useRouter } from "vue-router";
 import myFooter from "@/components/Footer.vue";
 import Co2TreesBar from "@/components/Co2TreesBar.vue";
 
@@ -169,6 +170,7 @@ export default {
     };
   },
   setup() {
+    const router = useRouter();
     let co2Emission = ref(0);
     let transport = ref([]);
     const map = ref(null);
@@ -522,7 +524,7 @@ export default {
           if (data.message) {
             alert(data.message);
           }
-          this.$router.push("/dashboard");
+          router.push("/dashboard");
         })
         .catch((error) => {
           console.error("There was a problem adding the trip:", error);
